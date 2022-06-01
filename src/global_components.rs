@@ -29,9 +29,6 @@ struct Health(f32);
 #[derive(Component)]
 struct Enemy;
 
-#[derive(Component)]
-struct Player;
-
 enum FloorType {
     CONCRETE,
     WATER,
