@@ -1,14 +1,24 @@
 mod unit;
 mod environment;
 
-use crate::unit::unit::UnitPlugin;
-use crate::environment::environment::EnvironmentPlugin;
 use bevy::{prelude::*};
+use bevy_inspector_egui::WorldInspectorPlugin;
+use crate::environment::environment::EnvironmentPlugin;
+use crate::unit::unit::UnitPlugin;
+
+pub const WINDOW_WIDTH: usize = 1600;
+pub const WINDOW_HEIGHT: usize = 900;
 
 fn main() {
     App::new()
+    .insert_resource(WindowDescriptor {
+        title: "Dungeon Digger".to_string(),
+        width: WINDOW_WIDTH as f32,
+        height: WINDOW_HEIGHT as f32,
+        ..default()
+    })
     .add_plugins(DefaultPlugins)
-    //.add_plugin(WorldInspectorPlugin::new())
+    .add_plugin(WorldInspectorPlugin::new())
     .add_plugin(UnitPlugin)
     .add_plugin(EnvironmentPlugin)
     .add_startup_system(setup_camera)
