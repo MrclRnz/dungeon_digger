@@ -1,4 +1,4 @@
-use core::panic;
+use crate::environment::GameState;
 
 use crate::environment::RpgSpriteHandles;
 use crate::environment::Tile;
@@ -40,7 +40,8 @@ pub fn render_walls(
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut textures: ResMut<Assets<Image>>,
-    mut query: Query<(&Tile, &Transform)>,
+    game_state: Res<GameState>,
+    query: Query<(&Tile, &Transform)>,
 ) {
     for (tile, trans) in query.iter() {
         let mut texture_atlas_builder = TextureAtlasBuilder::default();
@@ -86,36 +87,26 @@ pub fn render_walls(
             asset_server.get_handle(ENVIRONMENT_ASSET_PATH.to_owned() + WALL_FRONT_TOP);
         let wall_front_top_index = texture_atlas_2.get_texture_index(&wall_front_top).unwrap();
 
-        // tile.0 == x
-        if tile.0 == 0 {
-            if tile.1 == 0 {
-                spawn_sprite(
-                    &mut commands,
-                    atlas_handle.clone(),
-                    wall_front_index,
-                    trans.translation.x,
-                    trans.translation.y,
-                    RenderDirection::Below,
-                    false,
-                );
-                spawn_sprite(
-                    &mut commands,
-                    atlas_handle.clone(),
-                    wall_front_top_index,
-                    trans.translation.x,
-                    trans.translation.y,
-                    RenderDirection::OnTop,
-                    true,
-                );
-                spawn_sprite(
-                    &mut commands,
-                    atlas_handle.clone(),
-                    wall_left_index,
-                    trans.translation.x,
-                    trans.translation.y,
-                    RenderDirection::Left,
-                    false,
-                );
+        
+        if tile.y == 0 {
+            spawn_sprite(
+                &mut commands,
+                atlas_handle.clone(),
+                wall_front_index,
+                trans.translation.x,
+                trans.translation.y,
+                RenderDirection::Below,
+            );
+            spawn_sprite(
+                &mut commands,
+                atlas_handle.clone(),
+                wall_front_top_index,
+                trans.translation.x,
+                trans.translation.y,
+                RenderDirection::OnTop,
+            );
+
+            if tile.x == 0 {
                 spawn_sprite(
                     &mut commands,
                     atlas_handle.clone(),
@@ -123,134 +114,9 @@ pub fn render_walls(
                     trans.translation.x,
                     trans.translation.y,
                     RenderDirection::Diagonal(DiagonalDirection::LowerLeft),
-                    false,
-                );
-            } else if tile.1 == 10 {
-                spawn_sprite(
-                    &mut commands,
-                    atlas_handle.clone(),
-                    wall_front_index,
-                    trans.translation.x,
-                    trans.translation.y,
-                    RenderDirection::Above(1.),
-                    false,
-                );
-                spawn_sprite(
-                    &mut commands,
-                    atlas_handle.clone(),
-                    wall_front_top_index,
-                    trans.translation.x,
-                    trans.translation.y,
-                    RenderDirection::Above(2.),
-                    false,
-                );
-                spawn_sprite(
-                    &mut commands,
-                    atlas_handle.clone(),
-                    wall_left_index,
-                    trans.translation.x,
-                    trans.translation.y,
-                    RenderDirection::Left,
-                    false,
-                );
-                spawn_sprite(
-                    &mut commands,
-                    atlas_handle.clone(),
-                    wall_left_index,
-                    trans.translation.x,
-                    trans.translation.y,
-                    RenderDirection::Diagonal(DiagonalDirection::UpperLeft),
-                    false,
-                );
-                spawn_sprite(
-                    &mut commands,
-                    atlas_handle.clone(),
-                    wall_left_corner_top_index,
-                    trans.translation.x,
-                    trans.translation.y + TILE_SIZE as f32,
-                    RenderDirection::Diagonal(DiagonalDirection::UpperLeft),
-                    false,
-                );
-            } else {
-                spawn_sprite(
-                    &mut commands,
-                    atlas_handle.clone(),
-                    wall_left_index,
-                    trans.translation.x,
-                    trans.translation.y,
-                    RenderDirection::Diagonal(DiagonalDirection::LowerLeft),
-                    false,
                 );
             }
-        } else if tile.0 < 15 {
-            if tile.1 == 0 {
-                spawn_sprite(
-                    &mut commands,
-                    atlas_handle.clone(),
-                    wall_front_index,
-                    trans.translation.x,
-                    trans.translation.y,
-                    RenderDirection::Below,
-                    true,
-                );
-                spawn_sprite(
-                    &mut commands,
-                    atlas_handle.clone(),
-                    wall_front_top_index,
-                    trans.translation.x,
-                    trans.translation.y,
-                    RenderDirection::OnTop,
-                    true,
-                );
-            } else if tile.1 == 10 {
-                spawn_sprite(
-                    &mut commands,
-                    atlas_handle.clone(),
-                    wall_front_index,
-                    trans.translation.x,
-                    trans.translation.y,
-                    RenderDirection::Above(1.),
-                    false,
-                );
-                spawn_sprite(
-                    &mut commands,
-                    atlas_handle.clone(),
-                    wall_front_top_index,
-                    trans.translation.x,
-                    trans.translation.y,
-                    RenderDirection::Above(2.),
-                    false,
-                );
-            }
-        } else {
-            spawn_sprite(
-                &mut commands,
-                atlas_handle.clone(),
-                wall_right_index,
-                trans.translation.x,
-                trans.translation.y,
-                RenderDirection::Right,
-                false,
-            );
-            if tile.1 == 0 {
-                spawn_sprite(
-                    &mut commands,
-                    atlas_handle.clone(),
-                    wall_front_index,
-                    trans.translation.x,
-                    trans.translation.y,
-                    RenderDirection::Below,
-                    true,
-                );
-                spawn_sprite(
-                    &mut commands,
-                    atlas_handle.clone(),
-                    wall_front_top_index,
-                    trans.translation.x,
-                    trans.translation.y,
-                    RenderDirection::OnTop,
-                    true,
-                );
+            if tile.x == game_state.room_width {
                 spawn_sprite(
                     &mut commands,
                     atlas_handle.clone(),
@@ -258,36 +124,54 @@ pub fn render_walls(
                     trans.translation.x,
                     trans.translation.y,
                     RenderDirection::Diagonal(DiagonalDirection::LowerRight),
-                    false,
                 );
             }
-            if tile.1 == 10 {
+        }
+
+        if tile.y == game_state.room_height {
+            spawn_sprite(
+                &mut commands,
+                atlas_handle.clone(),
+                wall_front_index,
+                trans.translation.x,
+                trans.translation.y,
+                RenderDirection::Above(1.),
+            );
+            spawn_sprite(
+                &mut commands,
+                atlas_handle.clone(),
+                wall_front_top_index,
+                trans.translation.x,
+                trans.translation.y,
+                RenderDirection::Above(2.)
+            );
+
+            if tile.x == 0 {
                 spawn_sprite(
                     &mut commands,
                     atlas_handle.clone(),
-                    wall_front_index,
+                    wall_left_index,
                     trans.translation.x,
                     trans.translation.y,
-                    RenderDirection::Above(1.),
-                    false,
+                    RenderDirection::Diagonal(DiagonalDirection::UpperLeft)
                 );
                 spawn_sprite(
                     &mut commands,
                     atlas_handle.clone(),
-                    wall_front_top_index,
+                    wall_left_corner_top_index,
                     trans.translation.x,
-                    trans.translation.y,
-                    RenderDirection::Above(2.),
-                    false,
+                    trans.translation.y + TILE_SIZE as f32,
+                    RenderDirection::Diagonal(DiagonalDirection::UpperLeft)
                 );
+            }
+            if tile.x == game_state.room_width {
                 spawn_sprite(
                     &mut commands,
                     atlas_handle.clone(),
                     wall_right_index,
                     trans.translation.x,
                     trans.translation.y,
-                    RenderDirection::Diagonal(DiagonalDirection::UpperRight),
-                    false,
+                    RenderDirection::Diagonal(DiagonalDirection::UpperRight)
                 );
                 spawn_sprite(
                     &mut commands,
@@ -295,10 +179,31 @@ pub fn render_walls(
                     wall_right_corner_top_index,
                     trans.translation.x,
                     trans.translation.y + TILE_SIZE as f32,
-                    RenderDirection::Diagonal(DiagonalDirection::UpperRight),
-                    false,
+                    RenderDirection::Diagonal(DiagonalDirection::UpperRight)
                 );
             }
+        }
+
+        if tile.x == 0 {
+            spawn_sprite(
+                &mut commands,
+                atlas_handle.clone(),
+                wall_left_index,
+                trans.translation.x,
+                trans.translation.y,
+                RenderDirection::Left
+            );
+        }
+
+        if tile.x == game_state.room_width {
+            spawn_sprite(
+                &mut commands,
+                atlas_handle.clone(),
+                wall_right_index,
+                trans.translation.x,
+                trans.translation.y,
+                RenderDirection::Right
+            );
         }
     }
 }
@@ -309,10 +214,8 @@ fn spawn_sprite(
     index: usize,
     x: f32,
     y: f32,
-    dir: RenderDirection,
-    high_layer: bool,
+    dir: RenderDirection
 ) {
-    let z = if high_layer { 0.3 } else { 0.1 };
     let (x, y) = match dir {
         RenderDirection::Left => (x - TILE_SIZE as f32, y),
         RenderDirection::Right => (x + TILE_SIZE as f32, y),
@@ -328,7 +231,7 @@ fn spawn_sprite(
     };
     commands.spawn_bundle(SpriteSheetBundle {
         transform: Transform {
-            translation: Vec3::new(x, y, z),
+            translation: Vec3::new(x, y, 0.3),
             scale: Vec3::splat(2.0),
             ..default()
         },

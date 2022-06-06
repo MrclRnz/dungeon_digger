@@ -10,7 +10,10 @@ pub const TILE_SIZE: usize = 32;
 const FLOOR: &str = "/floor/floor_1.png";
 
 #[derive(Component)]
-pub struct Tile(pub usize, pub usize);
+pub struct Tile {
+    pub x: usize,
+    pub y: usize
+}
 
 #[derive(Default)]
 pub struct RpgSpriteHandles {
@@ -21,6 +24,11 @@ pub struct RpgSpriteHandles {
 pub struct TileMap {
     pub map: Vec<Tile>,
     pub width: usize,
+}
+
+pub struct GameState {
+    pub room_width: usize,
+    pub room_height: usize,
 }
 
 impl TileMap {
@@ -36,7 +44,12 @@ impl TileMap {
 
         let height_start = ((WINDOW_HEIGHT / TILE_SIZE) - height) / 2;
         let width_start = ((WINDOW_WIDTH / TILE_SIZE) - width) / 2;
-        let mut map = Vec::with_capacity(width * height);
+        let map = Vec::with_capacity(width * height);
+
+        commands.insert_resource(GameState {
+            room_width: width,
+            room_height: height,
+        });
 
         for h in 0..=height {
             for w in 0..=width {
@@ -47,22 +60,21 @@ impl TileMap {
                     + (height_start * TILE_SIZE) as f32
                     + (h * TILE_SIZE) as f32;
 
-                commands.spawn_bundle(SpriteSheetBundle {
-                    transform: Transform {
-                        translation: Vec3::new(x, y, 0.1),
-                        scale: Vec3::splat(2.0),
+                commands
+                    .spawn_bundle(SpriteSheetBundle {
+                        transform: Transform {
+                            translation: Vec3::new(x, y, 0.1),
+                            scale: Vec3::splat(2.0),
+                            ..default()
+                        },
+                        sprite: TextureAtlasSprite::new(floor_index),
+                        texture_atlas: atlas_handle.clone(),
                         ..default()
-                    },
-                    sprite: TextureAtlasSprite::new(floor_index),
-                    texture_atlas: atlas_handle.clone(),
-                    ..default()
-                }).insert(Tile(w, h));
+                    })
+                    .insert(Tile {x: w, y: h});
             }
         }
-        let tile_map = TileMap {
-            map,
-            width
-        };
+        let tile_map = TileMap { map, width };
         commands.spawn().insert(tile_map);
     }
 
@@ -102,8 +114,7 @@ fn generate_room_size() -> (usize, usize) {
     let mut rng = rand::thread_rng();
     let height = rng.gen_range(5..(WINDOW_HEIGHT / TILE_SIZE));
     let width = rng.gen_range(5..(WINDOW_HEIGHT / TILE_SIZE));
-    //(width, height)
-    (15, 10)
+    (width, height)
 }
 
 pub fn setup(
