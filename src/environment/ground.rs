@@ -2,8 +2,6 @@ use crate::environment::AppState;
 use crate::environment::ENVIRONMENT_ASSET_PATH;
 use crate::GameState;
 use crate::TILE_SIZE;
-use crate::WINDOW_HEIGHT;
-use crate::WINDOW_WIDTH;
 use bevy::{asset::*, prelude::*};
 use rand::Rng;
 
@@ -65,18 +63,6 @@ impl TileMap {
             width: game_state.room_width,
         };
         commands.spawn().insert(tile_map);
-    }
-
-    fn get(&self, x: usize, y: usize) -> &Tile {
-        self.map.get(x + self.width * y).unwrap()
-    }
-
-    fn push(&mut self, tile: Tile) {
-        self.map.push(tile);
-    }
-
-    fn put(&mut self, x: usize, y: usize, tile: Tile) {
-        self.map[x + self.width * y] = tile;
     }
 }
 

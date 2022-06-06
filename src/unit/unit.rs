@@ -1,5 +1,5 @@
-use bevy::{asset::LoadState, prelude::*};
 use crate::GameState;
+use bevy::{asset::LoadState, prelude::*};
 
 pub struct UnitPlugin;
 
@@ -116,30 +116,30 @@ fn move_player(
             let x = trans.translation.x - PLAYER_MOVEMENTSPEED;
             if is_within_bounds(&game_state, x, trans.translation.y) {
                 trans.translation.x = x;
-            } 
+            }
         }
         if keyboard_input.pressed(KeyCode::Right) {
             let x = trans.translation.x + PLAYER_MOVEMENTSPEED;
             if is_within_bounds(&game_state, x, trans.translation.y) {
                 trans.translation.x = x;
-            } 
+            }
         }
         if keyboard_input.pressed(KeyCode::Up) {
             let y = trans.translation.y + PLAYER_MOVEMENTSPEED;
             if is_within_bounds(&game_state, trans.translation.x, y) {
                 trans.translation.y = y;
-            } 
+            }
         }
         if keyboard_input.pressed(KeyCode::Down) {
             let y = trans.translation.y - PLAYER_MOVEMENTSPEED;
             if is_within_bounds(&game_state, trans.translation.x, y) {
                 trans.translation.y = y;
-            } 
+            }
         }
     }
 }
 
 fn is_within_bounds(game_state: &Res<GameState>, x: f32, y: f32) -> bool {
-    (game_state.min_x..game_state.get_max_x()).contains(&x) &&
-    (game_state.min_y..game_state.get_max_y()).contains(&y)
+    (game_state.min_x..game_state.get_max_x()).contains(&x)
+        && (game_state.min_y..game_state.get_max_y()).contains(&y)
 }

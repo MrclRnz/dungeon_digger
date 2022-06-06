@@ -1,8 +1,7 @@
-
-use crate::GameState;
 use crate::environment::RpgSpriteHandles;
 use crate::environment::Tile;
 use crate::environment::ENVIRONMENT_ASSET_PATH;
+use crate::GameState;
 use bevy::prelude::*;
 
 use crate::TILE_SIZE;
@@ -88,7 +87,6 @@ pub fn render_walls(
             asset_server.get_handle(ENVIRONMENT_ASSET_PATH.to_owned() + WALL_FRONT_TOP);
         let wall_front_top_index = texture_atlas_2.get_texture_index(&wall_front_top).unwrap();
 
-        
         if tile.y == 0 {
             spawn_sprite(
                 &mut commands,
@@ -144,7 +142,7 @@ pub fn render_walls(
                 wall_front_top_index,
                 trans.translation.x,
                 trans.translation.y,
-                RenderDirection::Above(2.)
+                RenderDirection::Above(2.),
             );
 
             if tile.x == 0 {
@@ -154,7 +152,7 @@ pub fn render_walls(
                     wall_left_index,
                     trans.translation.x,
                     trans.translation.y,
-                    RenderDirection::Diagonal(DiagonalDirection::UpperLeft)
+                    RenderDirection::Diagonal(DiagonalDirection::UpperLeft),
                 );
                 spawn_sprite(
                     &mut commands,
@@ -162,7 +160,7 @@ pub fn render_walls(
                     wall_left_corner_top_index,
                     trans.translation.x,
                     trans.translation.y + TILE_SIZE as f32,
-                    RenderDirection::Diagonal(DiagonalDirection::UpperLeft)
+                    RenderDirection::Diagonal(DiagonalDirection::UpperLeft),
                 );
             }
             if tile.x == game_state.room_width {
@@ -172,7 +170,7 @@ pub fn render_walls(
                     wall_right_index,
                     trans.translation.x,
                     trans.translation.y,
-                    RenderDirection::Diagonal(DiagonalDirection::UpperRight)
+                    RenderDirection::Diagonal(DiagonalDirection::UpperRight),
                 );
                 spawn_sprite(
                     &mut commands,
@@ -180,7 +178,7 @@ pub fn render_walls(
                     wall_right_corner_top_index,
                     trans.translation.x,
                     trans.translation.y + TILE_SIZE as f32,
-                    RenderDirection::Diagonal(DiagonalDirection::UpperRight)
+                    RenderDirection::Diagonal(DiagonalDirection::UpperRight),
                 );
             }
         }
@@ -192,7 +190,7 @@ pub fn render_walls(
                 wall_left_index,
                 trans.translation.x,
                 trans.translation.y,
-                RenderDirection::Left
+                RenderDirection::Left,
             );
         }
 
@@ -203,7 +201,7 @@ pub fn render_walls(
                 wall_right_index,
                 trans.translation.x,
                 trans.translation.y,
-                RenderDirection::Right
+                RenderDirection::Right,
             );
         }
     }
@@ -215,7 +213,7 @@ fn spawn_sprite(
     index: usize,
     x: f32,
     y: f32,
-    dir: RenderDirection
+    dir: RenderDirection,
 ) {
     let (x, y) = match dir {
         RenderDirection::Left => (x - TILE_SIZE as f32, y),
