@@ -5,19 +5,18 @@ pub struct UnitPlugin;
 impl Plugin for UnitPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<RpgSpriteHandles>()
-        .add_state(AppState::Setup)
-        .add_system_set(SystemSet::on_enter(AppState::Setup).with_system(load_textures))
-        .add_system_set(SystemSet::on_update(AppState::Setup).with_system(check_textures))
-        .add_system_set(SystemSet::on_enter(AppState::Finished).with_system(setup))
-        .add_system(animate_sprite)
-        .add_system(move_player);
+            .add_state(AppState::Setup)
+            .add_system_set(SystemSet::on_enter(AppState::Setup).with_system(load_textures))
+            .add_system_set(SystemSet::on_update(AppState::Setup).with_system(check_textures))
+            .add_system_set(SystemSet::on_enter(AppState::Finished).with_system(setup))
+            .add_system(animate_sprite)
+            .add_system(move_player);
     }
 }
 
 #[derive(Component)]
 struct Player;
 
- 
 #[derive(Component, Deref, DerefMut)]
 struct AnimationTimer(Timer);
 
@@ -51,7 +50,9 @@ struct RpgSpriteHandles {
 }
 
 fn load_textures(mut rpg_sprite_handles: ResMut<RpgSpriteHandles>, asset_server: Res<AssetServer>) {
-    rpg_sprite_handles.handles = asset_server.load_folder("frames/units/male_wizard/idle").unwrap();
+    rpg_sprite_handles.handles = asset_server
+        .load_folder("frames/units/male_wizard/idle")
+        .unwrap();
 }
 
 fn check_textures(
@@ -81,23 +82,25 @@ fn setup(
 
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
     let _texture_atlas_texture = texture_atlas.texture.clone();
-    let vendor_handle = asset_server.get_handle("frames/units/male_wizard/idle/wizzard_m_idle_anim_f0.png");
+    let vendor_handle =
+        asset_server.get_handle("frames/units/male_wizard/idle/wizzard_m_idle_anim_f0.png");
     let vendor_index = texture_atlas.get_texture_index(&vendor_handle).unwrap();
     let atlas_handle = texture_atlases.add(texture_atlas);
 
     // draw a sprite from the atlas
-    commands.spawn_bundle(SpriteSheetBundle {
-        transform: Transform {
-            translation: Vec3::new(150.0, 0.0, 0.2),
-            scale: Vec3::splat(2.0),
+    commands
+        .spawn_bundle(SpriteSheetBundle {
+            transform: Transform {
+                translation: Vec3::new(0., 0., 0.2),
+                scale: Vec3::splat(2.0),
+                ..default()
+            },
+            sprite: TextureAtlasSprite::new(vendor_index),
+            texture_atlas: atlas_handle,
             ..default()
-        },
-        sprite: TextureAtlasSprite::new(vendor_index),
-        texture_atlas: atlas_handle,
-        ..default()
-    })
-    .insert(AnimationTimer(Timer::from_seconds(0.1, true)))
-    .insert(Player);
+        })
+        .insert(AnimationTimer(Timer::from_seconds(0.1, true)))
+        .insert(Player);
     /*
     .with_children(|parent| {
         parent.spawn_bundle(OrthographicCameraBundle::new_2d());
@@ -112,18 +115,15 @@ fn setup(
         ..default()
     });
     */
-
 }
 
 fn move_player(
     keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<(&mut Player, &mut Transform)>
+    mut query: Query<(&mut Player, &mut Transform)>,
 ) {
-
     for (_player, mut trans) in query.iter_mut() {
-     
         if keyboard_input.pressed(KeyCode::Left) {
-            trans.translation.x -= 10.0; 
+            trans.translation.x -= 10.0;
         }
         if keyboard_input.pressed(KeyCode::Right) {
             trans.translation.x += 10.0;
@@ -135,5 +135,4 @@ fn move_player(
             trans.translation.y -= 10.0;
         }
     }
-
 }
