@@ -1,10 +1,11 @@
-use crate::environment::GameState;
 
+use crate::GameState;
 use crate::environment::RpgSpriteHandles;
 use crate::environment::Tile;
 use crate::environment::ENVIRONMENT_ASSET_PATH;
-use crate::environment::TILE_SIZE;
 use bevy::prelude::*;
+
+use crate::TILE_SIZE;
 
 const WALL_LEFT_CORNER_TOP: &str = "/wall/wall_side_top_left.png";
 const WALL_RIGHT_CORNER_TOP: &str = "/wall/wall_side_top_right.png";

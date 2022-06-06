@@ -1,18 +1,18 @@
 use crate::environment::AppState;
 use crate::environment::ENVIRONMENT_ASSET_PATH;
+use crate::GameState;
+use crate::TILE_SIZE;
 use crate::WINDOW_HEIGHT;
 use crate::WINDOW_WIDTH;
 use bevy::{asset::*, prelude::*};
 use rand::Rng;
 
-pub const TILE_SIZE: usize = 32;
-
-const FLOOR: &str = "/floor/floor_1.png";
+const FLOOR: &str = "/floor/floor_";
 
 #[derive(Component)]
 pub struct Tile {
     pub x: usize,
-    pub y: usize
+    pub y: usize,
 }
 
 #[derive(Default)]
@@ -26,40 +26,26 @@ pub struct TileMap {
     pub width: usize,
 }
 
-pub struct GameState {
-    pub room_width: usize,
-    pub room_height: usize,
-}
-
 impl TileMap {
     fn new(
         mut commands: Commands,
         asset_server: Res<AssetServer>,
         texture_atlas: TextureAtlas,
         atlas_handle: Handle<TextureAtlas>,
+        game_state: Res<GameState>,
     ) {
-        let (width, height) = generate_room_size();
-        let floor = asset_server.get_handle(ENVIRONMENT_ASSET_PATH.to_owned() + FLOOR);
-        let floor_index = texture_atlas.get_texture_index(&floor).unwrap();
+        let map = Vec::with_capacity(game_state.room_width * game_state.room_height);
 
-        let height_start = ((WINDOW_HEIGHT / TILE_SIZE) - height) / 2;
-        let width_start = ((WINDOW_WIDTH / TILE_SIZE) - width) / 2;
-        let map = Vec::with_capacity(width * height);
+        for h in 0..=game_state.room_height {
+            for w in 0..=game_state.room_width {
+                let x = game_state.min_x + (w * TILE_SIZE) as f32;
+                let y = game_state.min_y + (h * TILE_SIZE) as f32;
 
-        commands.insert_resource(GameState {
-            room_width: width,
-            room_height: height,
-        });
-
-        for h in 0..=height {
-            for w in 0..=width {
-                let x = -(WINDOW_WIDTH as isize / 2) as f32
-                    + (width_start * TILE_SIZE) as f32
-                    + (w * TILE_SIZE) as f32;
-                let y = -(WINDOW_HEIGHT as isize / 2) as f32
-                    + (height_start * TILE_SIZE) as f32
-                    + (h * TILE_SIZE) as f32;
-
+                let index = generate_floor_index();
+                let floor = asset_server.get_handle(
+                    ENVIRONMENT_ASSET_PATH.to_owned() + FLOOR + index.to_string().as_str() + ".png",
+                );
+                let floor_index = texture_atlas.get_texture_index(&floor).unwrap();
                 commands
                     .spawn_bundle(SpriteSheetBundle {
                         transform: Transform {
@@ -71,10 +57,13 @@ impl TileMap {
                         texture_atlas: atlas_handle.clone(),
                         ..default()
                     })
-                    .insert(Tile {x: w, y: h});
+                    .insert(Tile { x: w, y: h });
             }
         }
-        let tile_map = TileMap { map, width };
+        let tile_map = TileMap {
+            map,
+            width: game_state.room_width,
+        };
         commands.spawn().insert(tile_map);
     }
 
@@ -110,11 +99,9 @@ pub fn check_textures(
     }
 }
 
-fn generate_room_size() -> (usize, usize) {
+fn generate_floor_index() -> usize {
     let mut rng = rand::thread_rng();
-    let height = rng.gen_range(5..(WINDOW_HEIGHT / TILE_SIZE));
-    let width = rng.gen_range(5..(WINDOW_HEIGHT / TILE_SIZE));
-    (width, height)
+    rng.gen_range(1..=8)
 }
 
 pub fn setup(
@@ -124,6 +111,7 @@ pub fn setup(
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut textures: ResMut<Assets<Image>>,
+    game_state: Res<GameState>,
 ) {
     let mut texture_atlas_builder = TextureAtlasBuilder::default();
     for handle in &rpg_sprite_handles.handles {
@@ -135,7 +123,13 @@ pub fn setup(
     let texture_atlas_2 = texture_atlas.clone();
     let atlas_handle = texture_atlases.add(texture_atlas);
 
-    TileMap::new(commands, asset_server, texture_atlas_2, atlas_handle);
+    TileMap::new(
+        commands,
+        asset_server,
+        texture_atlas_2,
+        atlas_handle,
+        game_state,
+    );
 
     state.set(AppState::TileMapLoaded).unwrap();
 }

@@ -1,4 +1,5 @@
 use bevy::{asset::LoadState, prelude::*};
+use crate::GameState;
 
 pub struct UnitPlugin;
 
@@ -13,6 +14,8 @@ impl Plugin for UnitPlugin {
             .add_system(move_player);
     }
 }
+
+const PLAYER_MOVEMENTSPEED: f32 = 2.0;
 
 #[derive(Component)]
 struct Player;
@@ -101,38 +104,42 @@ fn setup(
         })
         .insert(AnimationTimer(Timer::from_seconds(0.1, true)))
         .insert(Player);
-    /*
-    .with_children(|parent| {
-        parent.spawn_bundle(OrthographicCameraBundle::new_2d());
-    });
-    */
-
-    // draw the atlas itself
-    /*
-    commands.spawn_bundle(SpriteBundle {
-        texture: texture_atlas_texture,
-        transform: Transform::from_xyz(-300.0, 0.0, 0.0),
-        ..default()
-    });
-    */
 }
 
 fn move_player(
     keyboard_input: Res<Input<KeyCode>>,
+    game_state: Res<GameState>,
     mut query: Query<(&mut Player, &mut Transform)>,
 ) {
     for (_player, mut trans) in query.iter_mut() {
         if keyboard_input.pressed(KeyCode::Left) {
-            trans.translation.x -= 10.0;
+            let x = trans.translation.x - PLAYER_MOVEMENTSPEED;
+            if is_within_bounds(&game_state, x, trans.translation.y) {
+                trans.translation.x = x;
+            } 
         }
         if keyboard_input.pressed(KeyCode::Right) {
-            trans.translation.x += 10.0;
+            let x = trans.translation.x + PLAYER_MOVEMENTSPEED;
+            if is_within_bounds(&game_state, x, trans.translation.y) {
+                trans.translation.x = x;
+            } 
         }
         if keyboard_input.pressed(KeyCode::Up) {
-            trans.translation.y += 10.0;
+            let y = trans.translation.y + PLAYER_MOVEMENTSPEED;
+            if is_within_bounds(&game_state, trans.translation.x, y) {
+                trans.translation.y = y;
+            } 
         }
         if keyboard_input.pressed(KeyCode::Down) {
-            trans.translation.y -= 10.0;
+            let y = trans.translation.y - PLAYER_MOVEMENTSPEED;
+            if is_within_bounds(&game_state, trans.translation.x, y) {
+                trans.translation.y = y;
+            } 
         }
     }
+}
+
+fn is_within_bounds(game_state: &Res<GameState>, x: f32, y: f32) -> bool {
+    (game_state.min_x..game_state.get_max_x()).contains(&x) &&
+    (game_state.min_y..game_state.get_max_y()).contains(&y)
 }
