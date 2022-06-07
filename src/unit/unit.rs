@@ -15,7 +15,7 @@ impl Plugin for UnitPlugin {
     }
 }
 
-const PLAYER_MOVEMENTSPEED: f32 = 2.0;
+const PLAYER_MOVEMENTSPEED: f32 = 1.5;
 
 #[derive(Component)]
 struct Player;
@@ -54,7 +54,7 @@ struct RpgSpriteHandles {
 
 fn load_textures(mut rpg_sprite_handles: ResMut<RpgSpriteHandles>, asset_server: Res<AssetServer>) {
     rpg_sprite_handles.handles = asset_server
-        .load_folder("frames/units/male_wizard/idle")
+        .load_folder("frames/units/male_wizard/run")
         .unwrap();
 }
 
@@ -86,7 +86,7 @@ fn setup(
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
     let _texture_atlas_texture = texture_atlas.texture.clone();
     let vendor_handle =
-        asset_server.get_handle("frames/units/male_wizard/idle/wizzard_m_idle_anim_f0.png");
+        asset_server.get_handle("frames/units/male_wizard/run/wizzard_m_run_anim_f0.png");
     let vendor_index = texture_atlas.get_texture_index(&vendor_handle).unwrap();
     let atlas_handle = texture_atlases.add(texture_atlas);
 

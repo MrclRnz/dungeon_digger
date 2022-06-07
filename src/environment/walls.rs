@@ -18,6 +18,8 @@ const WALL_RIGHT_CORNER: &str = "/wall/wall_side_front_right.png";
 
 const WALL_FRONT_TOP: &str = "/wall/wall_top_mid.png";
 
+const DOOR_CLOSED: &str = "/door/doors_leaf_closed.png";
+
 enum RenderDirection {
     Left,
     Right,
@@ -95,6 +97,7 @@ pub fn render_walls(
                 trans.translation.x,
                 trans.translation.y,
                 RenderDirection::Below,
+                0.3
             );
             spawn_sprite(
                 &mut commands,
@@ -103,6 +106,7 @@ pub fn render_walls(
                 trans.translation.x,
                 trans.translation.y,
                 RenderDirection::OnTop,
+                0.3
             );
 
             if tile.x == 0 {
@@ -113,6 +117,7 @@ pub fn render_walls(
                     trans.translation.x,
                     trans.translation.y,
                     RenderDirection::Diagonal(DiagonalDirection::LowerLeft),
+                    0.3
                 );
             }
             if tile.x == game_state.room_width {
@@ -123,6 +128,7 @@ pub fn render_walls(
                     trans.translation.x,
                     trans.translation.y,
                     RenderDirection::Diagonal(DiagonalDirection::LowerRight),
+                    0.3
                 );
             }
         }
@@ -135,6 +141,7 @@ pub fn render_walls(
                 trans.translation.x,
                 trans.translation.y,
                 RenderDirection::Above(1.),
+                0.1
             );
             spawn_sprite(
                 &mut commands,
@@ -143,6 +150,7 @@ pub fn render_walls(
                 trans.translation.x,
                 trans.translation.y,
                 RenderDirection::Above(2.),
+                0.1
             );
 
             if tile.x == 0 {
@@ -153,6 +161,7 @@ pub fn render_walls(
                     trans.translation.x,
                     trans.translation.y,
                     RenderDirection::Diagonal(DiagonalDirection::UpperLeft),
+                    0.3
                 );
                 spawn_sprite(
                     &mut commands,
@@ -161,6 +170,7 @@ pub fn render_walls(
                     trans.translation.x,
                     trans.translation.y + TILE_SIZE as f32,
                     RenderDirection::Diagonal(DiagonalDirection::UpperLeft),
+                    0.3
                 );
             }
             if tile.x == game_state.room_width {
@@ -171,6 +181,7 @@ pub fn render_walls(
                     trans.translation.x,
                     trans.translation.y,
                     RenderDirection::Diagonal(DiagonalDirection::UpperRight),
+                    0.3
                 );
                 spawn_sprite(
                     &mut commands,
@@ -179,6 +190,7 @@ pub fn render_walls(
                     trans.translation.x,
                     trans.translation.y + TILE_SIZE as f32,
                     RenderDirection::Diagonal(DiagonalDirection::UpperRight),
+                    0.3
                 );
             }
         }
@@ -191,6 +203,7 @@ pub fn render_walls(
                 trans.translation.x,
                 trans.translation.y,
                 RenderDirection::Left,
+                0.3
             );
         }
 
@@ -202,6 +215,7 @@ pub fn render_walls(
                 trans.translation.x,
                 trans.translation.y,
                 RenderDirection::Right,
+                0.3
             );
         }
     }
@@ -214,6 +228,7 @@ fn spawn_sprite(
     x: f32,
     y: f32,
     dir: RenderDirection,
+    z: f32
 ) {
     let (x, y) = match dir {
         RenderDirection::Left => (x - TILE_SIZE as f32, y),
@@ -230,7 +245,7 @@ fn spawn_sprite(
     };
     commands.spawn_bundle(SpriteSheetBundle {
         transform: Transform {
-            translation: Vec3::new(x, y, 0.3),
+            translation: Vec3::new(x, y, z),
             scale: Vec3::splat(2.0),
             ..default()
         },

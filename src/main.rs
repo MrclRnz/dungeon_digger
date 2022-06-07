@@ -24,7 +24,7 @@ impl GameState {
     }
 
     pub fn get_max_y(&self) -> f32 {
-        self.min_y + (self.room_height * TILE_SIZE) as f32
+        self.min_y + (self.room_height * TILE_SIZE) as f32 + TILE_SIZE as f32
     }
 }
 
