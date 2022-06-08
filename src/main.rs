@@ -1,5 +1,6 @@
 mod environment;
 mod unit;
+mod map;
 
 use crate::environment::EnvironmentPlugin;
 use crate::unit::unit::UnitPlugin;
@@ -10,6 +11,10 @@ use rand::Rng;
 pub const WINDOW_WIDTH: usize = 1600;
 pub const WINDOW_HEIGHT: usize = 900;
 pub const TILE_SIZE: usize = 32;
+
+const SCREEN_WIDTH: i32 = 80;
+const SCREEN_HEIGHT: i32 = 50;
+pub const NUM_TILES: usize = (SCREEN_WIDTH * SCREEN_HEIGHT) as usize;
 
 pub struct GameState {
     pub room_width: usize,
