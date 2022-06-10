@@ -18,8 +18,6 @@ const WALL_RIGHT_CORNER: &str = "/wall/wall_side_front_right.png";
 
 const WALL_FRONT_TOP: &str = "/wall/wall_top_mid.png";
 
-const DOOR_CLOSED: &str = "/door/doors_leaf_closed.png";
-
 enum RenderDirection {
     Left,
     Right,

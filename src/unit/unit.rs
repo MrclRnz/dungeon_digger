@@ -11,7 +11,8 @@ impl Plugin for UnitPlugin {
             .add_system_set(SystemSet::on_update(AppState::Setup).with_system(check_textures))
             .add_system_set(SystemSet::on_enter(AppState::Finished).with_system(setup))
             .add_system(animate_sprite)
-            .add_system(move_player);
+            .add_system(move_player)
+            .add_system(camera_follow);
     }
 }
 
@@ -106,6 +107,18 @@ fn setup(
         .insert(Player);
 }
 
+fn camera_follow(
+    player_query: Query<&Transform, With<Player>>,
+    mut camera_query: Query<&mut Transform, (Without<Player>, With<Camera>)>,
+) {
+    for player_transform in player_query.iter() {
+        let mut camera_transform = camera_query.single_mut();
+
+        camera_transform.translation.x = player_transform.translation.x;
+        camera_transform.translation.y = player_transform.translation.y;
+    }  
+}
+
 fn move_player(
     keyboard_input: Res<Input<KeyCode>>,
     game_state: Res<GameState>,
@@ -140,6 +153,9 @@ fn move_player(
 }
 
 fn is_within_bounds(game_state: &Res<GameState>, x: f32, y: f32) -> bool {
+    true
+    /*
     (game_state.min_x..game_state.get_max_x()).contains(&x)
         && (game_state.min_y..game_state.get_max_y()).contains(&y)
+        */
 }
