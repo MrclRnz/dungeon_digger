@@ -1,5 +1,6 @@
-use crate::GameState;
+use crate::{GameState, TILE_SIZE, map::data::{map_idx, TileType}};
 use bevy::{asset::LoadState, prelude::*};
+use crate::map::data::Map;
 
 pub struct UnitPlugin;
 
@@ -95,7 +96,7 @@ fn setup(
     commands
         .spawn_bundle(SpriteSheetBundle {
             transform: Transform {
-                translation: Vec3::new(0., 0., 0.2),
+                translation: Vec3::new(40., 40., 0.2),
                 scale: Vec3::splat(2.0),
                 ..default()
             },
@@ -121,41 +122,42 @@ fn camera_follow(
 
 fn move_player(
     keyboard_input: Res<Input<KeyCode>>,
-    game_state: Res<GameState>,
-    mut query: Query<(&mut Player, &mut Transform)>,
+    map: Res<Map>,
+    mut query: Query<&mut Transform, With<Player>>,
 ) {
-    for (_player, mut trans) in query.iter_mut() {
+    for  mut trans in query.iter_mut() {
         if keyboard_input.pressed(KeyCode::Left) {
             let x = trans.translation.x - PLAYER_MOVEMENTSPEED;
-            if is_within_bounds(&game_state, x, trans.translation.y) {
+            if is_within_bounds(&map, x, trans.translation.y) {
                 trans.translation.x = x;
             }
         }
         if keyboard_input.pressed(KeyCode::Right) {
             let x = trans.translation.x + PLAYER_MOVEMENTSPEED;
-            if is_within_bounds(&game_state, x, trans.translation.y) {
+            if is_within_bounds(&map, x, trans.translation.y) {
                 trans.translation.x = x;
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {
             let y = trans.translation.y + PLAYER_MOVEMENTSPEED;
-            if is_within_bounds(&game_state, trans.translation.x, y) {
+            if is_within_bounds(&map, trans.translation.x, y) {
                 trans.translation.y = y;
             }
         }
         if keyboard_input.pressed(KeyCode::Down) {
             let y = trans.translation.y - PLAYER_MOVEMENTSPEED;
-            if is_within_bounds(&game_state, trans.translation.x, y) {
+            if is_within_bounds(&map, trans.translation.x, y) {
                 trans.translation.y = y;
             }
         }
     }
 }
 
-fn is_within_bounds(game_state: &Res<GameState>, x: f32, y: f32) -> bool {
-    true
-    /*
-    (game_state.min_x..game_state.get_max_x()).contains(&x)
-        && (game_state.min_y..game_state.get_max_y()).contains(&y)
-        */
+fn is_within_bounds(map: &Res<Map>, x: f32, y: f32) -> bool {
+
+    let x = (x / TILE_SIZE as f32) as i32;
+    let y = (y / TILE_SIZE as f32) as i32;
+
+    println!("X is: {:?}", x);
+    map.tiles[map_idx(x, y)] == TileType::Floor
 }

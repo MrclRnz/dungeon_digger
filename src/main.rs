@@ -1,8 +1,6 @@
-mod environment;
 mod unit;
 mod map;
 
-use crate::environment::EnvironmentPlugin;
 use crate::map::MapPlugin;
 use crate::unit::unit::UnitPlugin;
 use bevy::prelude::*;
@@ -45,7 +43,6 @@ fn main() {
         .insert_resource(ClearColor(Color::rgb(0., 0., 0.)))
         .add_plugins(DefaultPlugins)
         .add_plugin(WorldInspectorPlugin::new())
-        //.add_plugin(EnvironmentPlugin)
         .add_plugin(MapPlugin)
         .add_plugin(UnitPlugin)
         .add_startup_system(setup_camera)

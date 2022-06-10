@@ -27,22 +27,6 @@ pub struct MapAssets {
     wall_side_front_right: Handle<Image>,
 }
 
-enum RenderDirection {
-    Left,
-    Right,
-    OnTop,
-    Above(f32),
-    Below,
-    Diagonal(DiagonalDirection),
-}
-
-enum DiagonalDirection {
-    UpperLeft,
-    UpperRight,
-    LowerLeft,
-    LowerRight,
-}
-
 impl Map {
     pub fn render(&self, commands: &mut Commands, map_textures: Res<MapAssets>) {
         for y in 0..SCREEN_HEIGHT {
@@ -83,39 +67,61 @@ fn generate_random_index(max: i32) -> i32 {
     rng.gen_range(0..max)
 }
 
-pub fn draw_wall(
-    commands: &mut Commands,
-    map_textures: &Res<MapAssets>,
-    x: i32,
-    y: i32
-) {
-    if y == 0 {
-        if x == 1 {
-            spawn_sprite(
-                commands,
-                map_textures.wall_mid.clone(),
-                x,
-                y,
-                RenderDirection::Below,
-                0.3,
-            );
-        }   
+pub fn draw_wall(commands: &mut Commands, map_textures: &Res<MapAssets>, x: i32, y: i32) {
+    let mut texture = map_textures.wall_mid.clone();
+    // The highest layer
+    let mut z = 0.3;
+    if x == 0 {
+        if y == 0 {
+            texture = map_textures.wall_side_front_left.clone();
+        } else {
+            texture = map_textures.wall_side_mid_left.clone();
+        }
+    } else if x == 79 {
+        if y == 0 {
+            texture = map_textures.wall_side_front_right.clone();
+        } else {
+            texture = map_textures.wall_side_mid_right.clone();
+        }
+    } else {
+        if y == 49 {
+            z = 0.1;
+        }
+        spawn_sprite(commands, map_textures.wall_top_mid.clone(), x, y + 1, z);
     }
+
+    // Special case for the upper corners to fill the 'void pixel'
+    if x == 0 && y == 49 {
+        spawn_sprite(
+            commands,
+            map_textures.wall_side_top_left.clone(),
+            x,
+            y + 1,
+            0.1,
+        );
+    }
+    if x == 79 && y == 49 {
+        spawn_sprite(
+            commands,
+            map_textures.wall_side_top_right.clone(),
+            x,
+            y + 1,
+            0.1,
+        );
+    }
+
+    spawn_sprite(commands, texture, x, y, z);
 }
 
-fn spawn_sprite(
-    commands: &mut Commands,
-    texture: Handle<Image>,
-    x: i32,
-    y: i32,
-    dir: RenderDirection,
-    z: f32,
-) {
-
+fn spawn_sprite(commands: &mut Commands, texture: Handle<Image>, x: i32, y: i32, z: f32) {
     commands.spawn_bundle(SpriteBundle {
         texture,
         transform: Transform {
-            translation: Vec3::new((x * TILE_SIZE as i32) as f32, (y * TILE_SIZE as i32) as f32, z),
+            translation: Vec3::new(
+                (x * TILE_SIZE as i32) as f32,
+                (y * TILE_SIZE as i32) as f32,
+                z,
+            ),
             scale: Vec3::splat(2.0),
             ..default()
         },
