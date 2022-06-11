@@ -1,6 +1,5 @@
 use crate::{MAX_ROOM_HEIGHT, MAX_ROOM_WIDTH};
 use bevy::math::Vec2;
-use bevy::sprite::Rect;
 use rand::Rng;
 
 use crate::{MAP_HEIGHT, MAP_WIDTH, NUM_ROOMS, NUM_TILES, TILE_SIZE};
@@ -12,24 +11,48 @@ pub enum TileType {
     Void,
 }
 
-struct Rectangle(Rect);
+#[derive(Debug)]
+struct Rectangle {
+    x: i32,
+    y: i32,
+    width: i32,
+    height: i32,
+}
 
 impl Rectangle {
-    fn new(min: Vec2, max: Vec2) -> Self {
-        Self(Rect { min, max })
+    fn new(x: i32, y: i32, width: i32, height: i32) -> Self {
+        Self {
+            x,
+            y,
+            width,
+            height,
+        }
     }
 
-    fn intersect(&self, other_rect: Rectangle) -> bool {
-        self.0.min.x < other_rect.0.max.x
-            && self.0.max.x > other_rect.0.min.x
-            && self.0.min.y > other_rect.0.max.y
-            && self.0.max.y < other_rect.0.min.y
+    fn center(&self) -> (i32, i32) {
+        (self.x + self.width / 2, self.y + self.height / 2)
+    }
+
+    fn min(&self) -> (i32, i32) {
+        (self.x, self.y)
+    }
+
+    fn max(&self) -> (i32, i32) {
+        (self.x + self.width - 1, self.y + self.height - 1)
+    }
+
+    fn intersect(&self, other_rect: &Rectangle) -> bool {
+        self.min().0 <= other_rect.max().0
+            && self.max().0 >= other_rect.min().0
+            && self.min().1 <= other_rect.max().1
+            && self.max().1 >= other_rect.min().1
     }
 }
 
 pub struct Map {
     pub tiles: Vec<TileType>,
-    //rooms: Vec<Rectangle>,
+    _rooms: Vec<Rectangle>,
+    pub player_start_pos: Vec2,
 }
 
 pub fn map_idx(x: i32, y: i32) -> usize {
@@ -59,27 +82,103 @@ pub fn map_idx_f32(x: f32, y: f32) -> usize {
 
 impl Map {
     pub fn new() -> Self {
-        let mut tiles = vec![TileType::Floor; NUM_TILES];
-        for x in 0..MAP_WIDTH {
-            tiles[map_idx(x, 0)] = TileType::Wall;
-            tiles[map_idx(x, MAP_HEIGHT - 1)] = TileType::Wall;
-        }
-        for y in 0..MAP_HEIGHT {
-            tiles[map_idx(0, y)] = TileType::Wall;
-            tiles[map_idx(MAP_WIDTH - 1, y)] = TileType::Wall;
+        let mut player_starting_x = 0;
+        let mut player_starting_y = 0;
+        let mut rooms = Vec::new();
+        while rooms.len() < NUM_ROOMS {
+            let room = generate_random_rectangle();
+            let mut overlap = false;
+            for r in &rooms {
+                if room.intersect(r) {
+                    overlap = true;
+                    break;
+                }
+            }
+            if !overlap {
+                if room.max().0 < MAP_WIDTH as i32 && room.max().1 < MAP_HEIGHT as i32 {
+                    if rooms.is_empty() {
+                        (player_starting_x, player_starting_y) = room.center();
+                    }
+                    println!("{:?}", &room);
+                    rooms.push(room);
+                }
+            }
         }
 
-        let rooms = vec!["test"];
-        //while rooms.len() < NUM_ROOMS {}
-        Self { tiles }
+        let mut tiles = vec![TileType::Void; NUM_TILES];
+        for room in &rooms {
+            set_room_tiles(&mut tiles, room);
+        }
+
+        Self {
+            tiles,
+            _rooms: rooms,
+            player_start_pos: Vec2::new(
+                (player_starting_x * TILE_SIZE as i32) as f32,
+                (player_starting_y * TILE_SIZE as i32) as f32,
+            ),
+        }
     }
 }
 
-/*
+fn set_room_tiles(tiles: &mut Vec<TileType>, room: &Rectangle) {
+    for y in room.min().1..=room.max().1 {
+        for x in room.min().0..=room.max().0 {
+            if x == room.min().0 || x == room.max().0 || y == room.min().1 || y == room.max().1 {
+                tiles[map_idx(x, y)] = TileType::Wall;
+            } else {
+                tiles[map_idx(x, y)] = TileType::Floor;
+            }
+        }
+    }
+}
+
 fn generate_random_rectangle() -> Rectangle {
     let mut rng = rand::thread_rng();
-    let width = rng.gen_range(2..MAX_ROOM_WIDTH);
-    let height = rng.gen_range(2..MAX_ROOM_HEIGHT);
+    let x = rng.gen_range(0..MAP_WIDTH - MAX_ROOM_WIDTH as i32);
+    let y = rng.gen_range(0..MAP_HEIGHT - MAX_ROOM_HEIGHT as i32);
+    // Always keep space for walls that will be develop into the inner bounds of the room
+    let width = rng.gen_range(6..MAX_ROOM_WIDTH as i32);
+    let height = rng.gen_range(6..MAX_ROOM_HEIGHT as i32);
 
+    Rectangle::new(x, y, width, height)
 }
-*/
+
+#[test]
+fn should_be_true_when_rectangles_intersect() {
+    let rectangle1 = Rectangle {
+        x: 0,
+        y: 0,
+        width: 5,
+        height: 5,
+    };
+
+    // this is exactly one tile overlap on (4/4)
+    let rectangle2 = Rectangle {
+        x: 4,
+        y: 4,
+        width: 5,
+        height: 5,
+    };
+
+    assert!(rectangle1.intersect(&rectangle2));
+}
+
+#[test]
+fn should_be_false_when_rectangles_dont_intersect() {
+    let rectangle1 = Rectangle {
+        x: 0,
+        y: 0,
+        width: 5,
+        height: 5,
+    };
+
+    let rectangle2 = Rectangle {
+        x: 5,
+        y: 5,
+        width: 5,
+        height: 5,
+    };
+
+    assert!(!rectangle1.intersect(&rectangle2));
+}

@@ -1,5 +1,5 @@
 use crate::map::data::{map_idx, Map, TileType};
-use crate::TILE_SIZE;
+use crate::{GameState, TILE_SIZE};
 use crate::{MAP_HEIGHT, MAP_WIDTH};
 use bevy::prelude::*;
 use bevy_asset_loader::AssetCollection;
@@ -59,8 +59,14 @@ impl Map {
     }
 }
 
-pub fn render_map(mut commands: Commands, map: ResMut<Map>, map_textures: Res<MapAssets>) {
+pub fn render_map(
+    mut commands: Commands,
+    map: ResMut<Map>,
+    mut game_state: ResMut<State<GameState>>,
+    map_textures: Res<MapAssets>,
+) {
     map.render(&mut commands, map_textures);
+    game_state.set(GameState::MapDrawn).unwrap();
 }
 
 fn draw_floor(commands: &mut Commands, map_textures: &Res<MapAssets>, x: i32, y: i32) {
@@ -108,20 +114,28 @@ pub fn draw_wall(
         WallType::Corner(corner_type) => match corner_type {
             CornerType::UpperLeft => {
                 z = 0.1;
-                spawn_sprite(commands, map_textures.wall_side_top_left.clone(), x, y + 1, z);
+                spawn_sprite(
+                    commands,
+                    map_textures.wall_side_top_left.clone(),
+                    x,
+                    y + 1,
+                    z,
+                );
                 map_textures.wall_side_mid_left.clone()
-            },
+            }
             CornerType::UpperRight => {
                 z = 0.1;
-                spawn_sprite(commands, map_textures.wall_side_top_right.clone(), x, y + 1, z);
+                spawn_sprite(
+                    commands,
+                    map_textures.wall_side_top_right.clone(),
+                    x,
+                    y + 1,
+                    z,
+                );
                 map_textures.wall_side_mid_right.clone()
-            },
-            CornerType::LowerLeft => {
-                map_textures.wall_side_front_left.clone()
-            },
-            CornerType::LowerRight => {
-                map_textures.wall_side_front_right.clone()
-            },
+            }
+            CornerType::LowerLeft => map_textures.wall_side_front_left.clone(),
+            CornerType::LowerRight => map_textures.wall_side_front_right.clone(),
         },
     };
     spawn_sprite(commands, texture, x, y, z);
@@ -153,10 +167,8 @@ fn determine_wall_type(map: &Map, x: i32, y: i32) -> WallType {
     // Here it might be possible that it is a corner wall so 3 neighbours are required
     if upper_neighbour == TileType::Void {
         if left_neighbour == TileType::Void {
-            println!("Upper Left");
             return WallType::Corner(CornerType::UpperLeft);
         } else if right_neighbour == TileType::Void {
-            println!("Upper Right");
             return WallType::Corner(CornerType::UpperRight);
         }
         return WallType::Top;
@@ -167,10 +179,8 @@ fn determine_wall_type(map: &Map, x: i32, y: i32) -> WallType {
     };
     if lower_neighbour == TileType::Void {
         if left_neighbour == TileType::Void {
-            println!("Lower Left");
             return WallType::Corner(CornerType::LowerLeft);
         } else if right_neighbour == TileType::Void {
-            println!("Lower Right");
             return WallType::Corner(CornerType::LowerRight);
         }
     }
@@ -180,12 +190,6 @@ fn determine_wall_type(map: &Map, x: i32, y: i32) -> WallType {
 }
 
 fn spawn_sprite(commands: &mut Commands, texture: Handle<Image>, x: i32, y: i32, z: f32) {
-    if x < 0 {
-        println!("X: {:?}", x);
-    }
-    if y < 0 {
-        println!("Y: {:?}", y);
-    }
     commands.spawn_bundle(SpriteBundle {
         texture,
         transform: Transform {

@@ -13,16 +13,19 @@ pub const WINDOW_HEIGHT: usize = 900;
 pub const TILE_SIZE: usize = 32;
 
 const MAP_WIDTH: i32 = 80;
-const MAP_HEIGHT: i32 = 40;
+const MAP_HEIGHT: i32 = 50;
 pub const NUM_TILES: usize = (MAP_WIDTH * MAP_HEIGHT) as usize;
-const NUM_ROOMS: usize = 10;
-const MAX_ROOM_WIDTH: usize = 10;
-const MAX_ROOM_HEIGHT: usize = 10;
+const NUM_ROOMS: usize = 5;
+const MAX_ROOM_WIDTH: usize = 15;
+const MAX_ROOM_HEIGHT: usize = 15;
 
 fn main() {
+    if NUM_ROOMS * MAX_ROOM_HEIGHT * MAX_ROOM_WIDTH > NUM_TILES {
+        panic!("Not enough place for all rooms");
+    }
     let mut app = App::new();
     AssetLoader::new(GameState::AssetLoading)
-        .continue_to_state(GameState::Next)
+        .continue_to_state(GameState::AssetsDone)
         .with_collection::<MapAssets>()
         .with_collection::<PlayerAssets>()
         .build(&mut app);
@@ -49,5 +52,6 @@ fn setup_camera(mut commands: Commands) {
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
 pub enum GameState {
     AssetLoading,
-    Next,
+    AssetsDone,
+    MapDrawn
 }

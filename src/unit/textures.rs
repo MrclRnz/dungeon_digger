@@ -1,6 +1,7 @@
-use crate::unit::data::Player;
+use crate::{unit::data::Player};
 use bevy::prelude::*;
 use bevy_asset_loader::AssetCollection;
+use crate::map::data::Map;
 
 #[derive(AssetCollection)]
 pub struct PlayerAssets {
@@ -13,6 +14,7 @@ pub struct AnimationTimer(Timer);
 
 pub fn spawn_player(
     mut commands: Commands,
+    map: Res<Map>,
     player_textures: Res<PlayerAssets>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut textures: ResMut<Assets<Image>>,
@@ -26,10 +28,13 @@ pub fn spawn_player(
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
     let atlas_handle = texture_atlases.add(texture_atlas);
 
+    let x = map.player_start_pos.x;
+    let y = map.player_start_pos.y;
+
     commands
         .spawn_bundle(SpriteSheetBundle {
             transform: Transform {
-                translation: Vec3::new(40., 40., 0.2),
+                translation: Vec3::new(x, y, 0.2),
                 scale: Vec3::splat(2.0),
                 ..default()
             },
