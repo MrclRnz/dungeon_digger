@@ -1,4 +1,4 @@
-use crate::{SCREEN_WIDTH, NUM_TILES, SCREEN_HEIGHT};
+use crate::{NUM_TILES, SCREEN_HEIGHT, SCREEN_WIDTH};
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum TileType {
@@ -25,8 +25,6 @@ impl Map {
             tiles[map_idx(0, y)] = TileType::Wall;
             tiles[map_idx(SCREEN_WIDTH - 1, y)] = TileType::Wall;
         }
-        Self {
-            tiles 
-        }
+        Self { tiles }
     }
 }

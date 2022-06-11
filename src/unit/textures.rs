@@ -1,6 +1,6 @@
-use bevy_asset_loader::AssetCollection;
-use bevy::prelude::*;
 use crate::unit::data::Player;
+use bevy::prelude::*;
+use bevy_asset_loader::AssetCollection;
 
 #[derive(AssetCollection)]
 pub struct PlayerAssets {
@@ -44,11 +44,14 @@ pub fn spawn_player(
 pub fn animate_run_player(
     time: Res<Time>,
     texture_atlases: Res<Assets<TextureAtlas>>,
-    mut query: Query<(
-        &mut AnimationTimer,
-        &mut TextureAtlasSprite,
-        &Handle<TextureAtlas>,
-    ), With<Player>>,
+    mut query: Query<
+        (
+            &mut AnimationTimer,
+            &mut TextureAtlasSprite,
+            &Handle<TextureAtlas>,
+        ),
+        With<Player>,
+    >,
 ) {
     for (mut timer, mut sprite, texture_atlas_handle) in query.iter_mut() {
         timer.tick(time.delta());

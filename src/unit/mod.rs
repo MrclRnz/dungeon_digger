@@ -1,9 +1,9 @@
 mod data;
 pub mod textures;
 
-use crate::GameState;
 use crate::unit::data::{camera_follow, move_player};
 use crate::unit::textures::{animate_run_player, spawn_player};
+use crate::GameState;
 use bevy::prelude::*;
 
 pub struct UnitPlugin;
