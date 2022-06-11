@@ -1,5 +1,4 @@
-use crate::map::data::{map_idx, Map, TileType};
-use crate::TILE_SIZE;
+use crate::map::data::{map_idx_f32, Map, TileType};
 use bevy::prelude::*;
 
 const PLAYER_MOVEMENTSPEED: f32 = 1.5;
@@ -53,8 +52,5 @@ pub fn move_player(
 }
 
 fn is_within_bounds(map: &Res<Map>, x: f32, y: f32) -> bool {
-    let x = (x / TILE_SIZE as f32) as i32;
-    let y = (y / TILE_SIZE as f32) as i32;
-
-    map.tiles[map_idx(x, y)] == TileType::Floor
+    map.tiles[map_idx_f32(x, y)] == TileType::Floor
 }

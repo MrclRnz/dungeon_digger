@@ -1,6 +1,6 @@
-use crate::{NUM_TILES, SCREEN_HEIGHT, SCREEN_WIDTH};
+use crate::{NUM_TILES, SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE};
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum TileType {
     Wall,
     Floor,
@@ -12,6 +12,20 @@ pub struct Map {
 
 pub fn map_idx(x: i32, y: i32) -> usize {
     (y * SCREEN_WIDTH + x) as usize
+}
+
+pub fn map_idx_f32(x: f32, y: f32) -> usize {
+    let remainder = x % TILE_SIZE as f32;
+    let mut x = x as usize / TILE_SIZE;
+    if x as i32 > SCREEN_WIDTH / 2 {
+        if remainder > 0. {
+            x += 1;
+        }
+    }
+    
+    let y = y as usize / TILE_SIZE;
+
+    y * SCREEN_WIDTH as usize + x
 }
 
 impl Map {
