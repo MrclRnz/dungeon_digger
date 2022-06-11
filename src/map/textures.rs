@@ -77,21 +77,21 @@ pub fn draw_wall(commands: &mut Commands, map_textures: &Res<MapAssets>, x: i32,
         } else {
             texture = map_textures.wall_side_mid_left.clone();
         }
-    } else if x == 79 {
+    } else if x == SCREEN_WIDTH - 1 {
         if y == 0 {
             texture = map_textures.wall_side_front_right.clone();
         } else {
             texture = map_textures.wall_side_mid_right.clone();
         }
     } else {
-        if y == 49 {
+        if y == SCREEN_HEIGHT - 1 {
             z = 0.1;
         }
         spawn_sprite(commands, map_textures.wall_top_mid.clone(), x, y + 1, z);
     }
 
     // Special case for the upper corners to fill the 'void pixel'
-    if x == 0 && y == 49 {
+    if x == 0 && y == SCREEN_HEIGHT - 1 {
         spawn_sprite(
             commands,
             map_textures.wall_side_top_left.clone(),
@@ -100,7 +100,7 @@ pub fn draw_wall(commands: &mut Commands, map_textures: &Res<MapAssets>, x: i32,
             0.1,
         );
     }
-    if x == 79 && y == 49 {
+    if x == SCREEN_WIDTH - 1 && y == SCREEN_HEIGHT - 1 {
         spawn_sprite(
             commands,
             map_textures.wall_side_top_right.clone(),

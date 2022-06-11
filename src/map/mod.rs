@@ -1,16 +1,18 @@
 pub mod data;
-mod textures;
+pub mod textures;
 
+use crate::GameState;
 use self::{data::Map, textures::*};
 use bevy::prelude::*;
-use bevy_asset_loader::AssetCollectionApp;
 
 pub struct MapPlugin;
 
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(Map::new())
-            .init_collection::<MapAssets>()
-            .add_startup_system(render_map);
+
+
+        app
+            .insert_resource(Map::new())
+            .add_system_set(SystemSet::on_enter(GameState::Next).with_system(render_map));
     }
 }
