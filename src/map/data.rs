@@ -1,6 +1,7 @@
 use crate::{MAX_ROOM_HEIGHT, MAX_ROOM_WIDTH};
 use bevy::math::Vec2;
 use rand::Rng;
+use std::cmp::{max, min};
 
 use crate::{MAP_HEIGHT, MAP_WIDTH, NUM_ROOMS, NUM_TILES, TILE_SIZE};
 
@@ -11,7 +12,7 @@ pub enum TileType {
     Void,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct Rectangle {
     x: i32,
     y: i32,
@@ -99,7 +100,6 @@ impl Map {
                     if rooms.is_empty() {
                         (player_starting_x, player_starting_y) = room.center();
                     }
-                    println!("{:?}", &room);
                     rooms.push(room);
                 }
             }
@@ -109,7 +109,7 @@ impl Map {
         for room in &rooms {
             set_room_tiles(&mut tiles, room);
         }
-
+        build_corridors(&mut tiles, &rooms);
         Self {
             tiles,
             _rooms: rooms,
@@ -117,6 +117,59 @@ impl Map {
                 (player_starting_x * TILE_SIZE as i32) as f32,
                 (player_starting_y * TILE_SIZE as i32) as f32,
             ),
+        }
+    }
+}
+
+fn build_corridors(tiles: &mut Vec<TileType>, rooms: &Vec<Rectangle>) {
+    let mut rooms = rooms.clone();
+    rooms.sort_by(|a, b| a.center().0.cmp(&b.center().0));
+
+    for (i, room) in rooms.iter().enumerate().skip(1) {
+        let prev = rooms[i - 1].center();
+        let new = room.center();
+
+        let mut rng = rand::thread_rng();
+        if rng.gen_range(0..=1) == 1 {
+            apply_horizontal_tunnel(tiles, prev.0, new.0, prev.1);
+            apply_vertical_tunnel(tiles, prev.1, new.1, new.0);
+        } else {
+            apply_vertical_tunnel(tiles, prev.1, new.1, prev.0);
+            apply_horizontal_tunnel(tiles, prev.0, new.0, new.1);
+        }
+    }
+}
+
+fn apply_vertical_tunnel(tiles: &mut Vec<TileType>, y1: i32, y2: i32, x: i32) {
+    for y in min(y1, y2)..=max(y1, y2) {
+        if let Some(idx) = try_map_idx(x, y) {
+            if tiles[idx] == TileType::Floor {
+                continue;
+            }
+            tiles[idx] = TileType::Floor;
+        }
+        if let Some(idx) = try_map_idx(x + 1, y) {
+            tiles[idx] = TileType::Wall;
+        }
+        if let Some(idx) = try_map_idx(x - 1, y) {
+            tiles[idx] = TileType::Wall;
+        }
+    }
+}
+
+fn apply_horizontal_tunnel(tiles: &mut Vec<TileType>, x1: i32, x2: i32, y: i32) {
+    for x in min(x1, x2)..=max(x1, x2) {
+        if let Some(idx) = try_map_idx(x, y) {
+            if tiles[idx] == TileType::Floor {
+                continue;
+            }
+            tiles[idx] = TileType::Floor;
+        }
+        if let Some(idx) = try_map_idx(x, y + 1) {
+            tiles[idx] = TileType::Wall;
+        }
+        if let Some(idx) = try_map_idx(x, y - 1) {
+            tiles[idx] = TileType::Wall;
         }
     }
 }
