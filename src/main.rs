@@ -12,9 +12,12 @@ pub const WINDOW_WIDTH: usize = 1600;
 pub const WINDOW_HEIGHT: usize = 900;
 pub const TILE_SIZE: usize = 32;
 
-const SCREEN_WIDTH: i32 = 40;
-const SCREEN_HEIGHT: i32 = 25;
-pub const NUM_TILES: usize = (SCREEN_WIDTH * SCREEN_HEIGHT) as usize;
+const MAP_WIDTH: i32 = 80;
+const MAP_HEIGHT: i32 = 40;
+pub const NUM_TILES: usize = (MAP_WIDTH * MAP_HEIGHT) as usize;
+const NUM_ROOMS: usize = 10;
+const MAX_ROOM_WIDTH: usize = 10;
+const MAX_ROOM_HEIGHT: usize = 10;
 
 fn main() {
     let mut app = App::new();
