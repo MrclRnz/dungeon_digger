@@ -34,7 +34,7 @@ pub fn spawn_player(
     commands
         .spawn_bundle(SpriteSheetBundle {
             transform: Transform {
-                translation: Vec3::new(x, y, 0.2),
+                translation: Vec3::new(x, y, 0.4),
                 scale: Vec3::splat(2.0),
                 ..default()
             },
