@@ -48,6 +48,16 @@ impl Rectangle {
             && self.min().1 <= other_rect.max().1
             && self.max().1 >= other_rect.min().1
     }
+
+    fn bounds_overlap(&self, other_rect: &Rectangle) -> bool {
+        let x_bounds = self.x..=self.max().0;
+        let y_bounds = self.y..=self.max().1;
+
+        x_bounds.contains(&other_rect.x)
+            || x_bounds.contains(&other_rect.max().0)
+            || y_bounds.contains(&other_rect.y)
+            || y_bounds.contains(&other_rect.max().1)
+    }
 }
 
 pub struct Map {
@@ -130,27 +140,33 @@ fn build_corridors(tiles: &mut Vec<TileType>, rooms: &Vec<Rectangle>) {
         let new = room.center();
 
         let mut rng = rand::thread_rng();
-        let horizontal_first =  rng.gen_range(0..=1) == 1;
+        let horizontal_first = rng.gen_range(0..=1) == 1;
         if horizontal_first {
             apply_horizontal_tunnel(tiles, prev.0, new.0, prev.1);
             apply_vertical_tunnel(tiles, prev.1, new.1, new.0);
-            // two special walls required that are the corner of the tunnels
-            tiles[map_idx(new.0 + 1, prev.1)] = TileType::Wall;
-            if new.1 > prev.1 {
-                tiles[map_idx(new.0 + 1, prev.1 - 1)] = TileType::Wall;
-            } else {
-                tiles[map_idx(new.0 + 1, prev.1 + 1)] = TileType::Wall;
+            // two special walls required that are the corner of the tunnels if a corner exists
+            // which is the case when the boundaries of the room don't overlap
+            if !room.bounds_overlap(&rooms[i - 1]) {
+                tiles[map_idx(new.0 + 1, prev.1)] = TileType::Wall;
+                if new.1 > prev.1 {
+                    tiles[map_idx(new.0 + 1, prev.1 - 1)] = TileType::Wall;
+                } else {
+                    tiles[map_idx(new.0 + 1, prev.1 + 1)] = TileType::Wall;
+                }
             }
         } else {
             apply_vertical_tunnel(tiles, prev.1, new.1, prev.0);
             apply_horizontal_tunnel(tiles, prev.0, new.0, new.1);
-            // two special walls required that are the corner of the tunnels
-            if new.1 > prev.1 {
-                tiles[map_idx(prev.0, new.1 + 1)] = TileType::Wall;
-                tiles[map_idx(prev.0 - 1, new.1 + 1)] = TileType::Wall;
-            } else {
-                tiles[map_idx(prev.0, new.1 - 1)] = TileType::Wall;
-                tiles[map_idx(prev.0 - 1, new.1 - 1)] = TileType::Wall;
+            // two special walls required that are the corner of the tunnels if a corner exists
+            // which is the case when the boundaries of the room don't overlap
+            if !room.bounds_overlap(&rooms[i - 1]) {
+                if new.1 > prev.1 {
+                    tiles[map_idx(prev.0, new.1 + 1)] = TileType::Wall;
+                    tiles[map_idx(prev.0 - 1, new.1 + 1)] = TileType::Wall;
+                } else {
+                    tiles[map_idx(prev.0, new.1 - 1)] = TileType::Wall;
+                    tiles[map_idx(prev.0 - 1, new.1 - 1)] = TileType::Wall;
+                }
             }
         }
     }
@@ -250,4 +266,42 @@ fn should_be_false_when_rectangles_dont_intersect() {
     };
 
     assert!(!rectangle1.intersect(&rectangle2));
+}
+
+#[test]
+fn should_be_true_when_rectangles_bounds_overlap() {
+    let rectangle1 = Rectangle {
+        x: 0,
+        y: 0,
+        width: 5,
+        height: 5,
+    };
+
+    let rectangle2 = Rectangle {
+        x: 4,
+        y: 5,
+        width: 5,
+        height: 5,
+    };
+
+    assert!(rectangle1.bounds_overlap(&rectangle2));
+}
+
+#[test]
+fn should_be_false_when_rectangles_bounds_dont_overlap() {
+    let rectangle1 = Rectangle {
+        x: 0,
+        y: 0,
+        width: 5,
+        height: 5,
+    };
+
+    let rectangle2 = Rectangle {
+        x: 5,
+        y: 5,
+        width: 5,
+        height: 5,
+    };
+
+    assert!(!rectangle1.bounds_overlap(&rectangle2));
 }
