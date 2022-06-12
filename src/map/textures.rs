@@ -173,14 +173,14 @@ pub fn draw_wall(
                 spawn_sprite(commands, map_textures.wall_inner_corner_top_right.clone(), x, y + 1, 0.1);
             }
             CornerType::InnerLowerLeft => {
-                spawn_sprite(commands, map_textures.wall_mid.clone(), x, y, 0.3);
-                spawn_sprite(commands, map_textures.wall_top_mid.clone(), x, y + 1, 0.3);
-                spawn_sprite(commands, map_textures.wall_side_mid_right.clone(), x, y, 0.4);
+                spawn_sprite(commands, map_textures.wall_mid.clone(), x, y, 0.5);
+                spawn_sprite(commands, map_textures.wall_top_mid.clone(), x, y + 1, 0.5);
+                spawn_sprite(commands, map_textures.wall_side_mid_right.clone(), x, y, 0.5);
             }
             CornerType::InnerLowerRight => {
-                spawn_sprite(commands, map_textures.wall_mid.clone(), x, y, 0.3);
-                spawn_sprite(commands, map_textures.wall_top_mid.clone(), x, y + 1, 0.3);
-                spawn_sprite(commands, map_textures.wall_side_mid_left.clone(), x, y, 0.4);
+                spawn_sprite(commands, map_textures.wall_mid.clone(), x, y, 0.5);
+                spawn_sprite(commands, map_textures.wall_top_mid.clone(), x, y + 1, 0.5);
+                spawn_sprite(commands, map_textures.wall_side_mid_left.clone(), x, y, 0.5);
             }
             CornerType::LowerLeft => spawn_sprite(
                 commands,
