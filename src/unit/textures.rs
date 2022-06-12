@@ -1,7 +1,7 @@
-use crate::{unit::data::Player};
+use crate::map::data::Map;
+use crate::unit::data::Player;
 use bevy::prelude::*;
 use bevy_asset_loader::AssetCollection;
-use crate::map::data::Map;
 
 #[derive(AssetCollection)]
 pub struct PlayerAssets {

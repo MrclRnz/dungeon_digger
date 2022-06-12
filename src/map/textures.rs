@@ -32,7 +32,7 @@ pub struct MapAssets {
     #[asset(path = "frames/environment/wall/wall_inner_corner_l_top_left.png")]
     wall_inner_corner_top_right: Handle<Image>,
     #[asset(path = "frames/environment/special_floor/floor_ladder.png")]
-    ladder: Handle<Image>,
+    _ladder: Handle<Image>,
 }
 
 enum WallType {
@@ -63,9 +63,9 @@ impl Map {
                     TileType::Floor => draw_floor(commands, &map_textures, x, y),
                     TileType::Wall => draw_wall(commands, &map_textures, self, x, y),
                     TileType::Void => {
-                        /* debugging purpose 
+                        /* debugging purpose
                         commands.spawn_bundle(SpriteBundle {
-                            texture: map_textures.ladder.clone(),
+                            texture: map_textures._ladder.clone(),
                             transform: Transform {
                                 translation: Vec3::new(
                                     (x * TILE_SIZE as i32) as f32,
@@ -162,20 +162,44 @@ pub fn draw_wall(
                     y + 1,
                     0.1,
                 );
-                spawn_sprite(commands, map_textures.wall_side_mid_right.clone(), x, y, 0.1);
+                spawn_sprite(
+                    commands,
+                    map_textures.wall_side_mid_right.clone(),
+                    x,
+                    y,
+                    0.1,
+                );
             }
             CornerType::InnerUpperLeft => {
                 spawn_sprite(commands, map_textures.wall_mid.clone(), x, y, 0.1);
-                spawn_sprite(commands, map_textures.wall_inner_corner_top_left.clone(), x, y + 1, 0.1);
+                spawn_sprite(
+                    commands,
+                    map_textures.wall_inner_corner_top_left.clone(),
+                    x,
+                    y + 1,
+                    0.1,
+                );
             }
             CornerType::InnerUpperRight => {
                 spawn_sprite(commands, map_textures.wall_mid.clone(), x, y, 0.1);
-                spawn_sprite(commands, map_textures.wall_inner_corner_top_right.clone(), x, y + 1, 0.1);
+                spawn_sprite(
+                    commands,
+                    map_textures.wall_inner_corner_top_right.clone(),
+                    x,
+                    y + 1,
+                    0.1,
+                );
             }
             CornerType::InnerLowerLeft => {
                 spawn_sprite(commands, map_textures.wall_mid.clone(), x, y, 0.5);
                 spawn_sprite(commands, map_textures.wall_top_mid.clone(), x, y + 1, 0.5);
-                spawn_sprite(commands, map_textures.wall_side_mid_right.clone(), x, y, 0.5);
+                spawn_sprite(
+                    commands,
+                    map_textures.wall_side_mid_right.clone(),
+                    x,
+                    y,
+                    0.5,
+                );
             }
             CornerType::InnerLowerRight => {
                 spawn_sprite(commands, map_textures.wall_mid.clone(), x, y, 0.5);

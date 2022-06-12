@@ -94,10 +94,8 @@ pub fn try_map_idx(x: i32, y: i32) -> Option<usize> {
 pub fn map_idx_f32(x: f32, y: f32) -> usize {
     let remainder = x % TILE_SIZE as f32;
     let mut x = x as usize / TILE_SIZE;
-    if x as i32 > MAP_WIDTH / 2 {
-        if remainder > 0. {
-            x += 1;
-        }
+    if x as i32 > MAP_WIDTH / 2 && remainder > 0. {
+        x += 1;
     }
 
     let y = y as usize / TILE_SIZE;
@@ -129,13 +127,15 @@ impl Map {
                     break;
                 }
             }
-            if !overlap_or_touch && !corridor_too_close_to_walls {
-                if room.max().0 < MAP_WIDTH as i32 && room.max().1 < MAP_HEIGHT as i32 {
-                    if rooms.is_empty() {
-                        (player_starting_x, player_starting_y) = room.center();
-                    }
-                    rooms.push(room);
+            if !overlap_or_touch
+                && !corridor_too_close_to_walls
+                && room.max().0 < MAP_WIDTH as i32
+                && room.max().1 < MAP_HEIGHT as i32
+            {
+                if rooms.is_empty() {
+                    (player_starting_x, player_starting_y) = room.center();
                 }
+                rooms.push(room);
             }
         }
 
@@ -153,10 +153,14 @@ impl Map {
             ),
         }
     }
+
+    pub fn can_enter_tile_f32(&self, x: f32, y: f32) -> bool {
+        self.tiles[map_idx_f32(x, y)] == TileType::Floor
+    }
 }
 
-fn build_corridors(tiles: &mut Vec<TileType>, rooms: &Vec<Rectangle>) {
-    let mut rooms = rooms.clone();
+fn build_corridors(tiles: &mut [TileType], rooms: &[Rectangle]) {
+    let mut rooms = rooms.to_owned();
     rooms.sort_by(|a, b| a.center().0.cmp(&b.center().0));
 
     for (i, room) in rooms.iter().enumerate().skip(1) {
@@ -196,7 +200,7 @@ fn build_corridors(tiles: &mut Vec<TileType>, rooms: &Vec<Rectangle>) {
     }
 }
 
-fn apply_vertical_tunnel(tiles: &mut Vec<TileType>, y1: i32, y2: i32, x: i32) {
+fn apply_vertical_tunnel(tiles: &mut [TileType], y1: i32, y2: i32, x: i32) {
     for y in min(y1, y2)..=max(y1, y2) {
         if let Some(idx) = try_map_idx(x, y) {
             if tiles[idx] == TileType::Floor {
@@ -213,7 +217,7 @@ fn apply_vertical_tunnel(tiles: &mut Vec<TileType>, y1: i32, y2: i32, x: i32) {
     }
 }
 
-fn apply_horizontal_tunnel(tiles: &mut Vec<TileType>, x1: i32, x2: i32, y: i32) {
+fn apply_horizontal_tunnel(tiles: &mut [TileType], x1: i32, x2: i32, y: i32) {
     for x in min(x1, x2)..=max(x1, x2) {
         if let Some(idx) = try_map_idx(x, y) {
             if tiles[idx] == TileType::Floor {
@@ -230,7 +234,7 @@ fn apply_horizontal_tunnel(tiles: &mut Vec<TileType>, x1: i32, x2: i32, y: i32) 
     }
 }
 
-fn set_room_tiles(tiles: &mut Vec<TileType>, room: &Rectangle) {
+fn set_room_tiles(tiles: &mut [TileType], room: &Rectangle) {
     for y in room.min().1..=room.max().1 {
         for x in room.min().0..=room.max().0 {
             if x == room.min().0 || x == room.max().0 || y == room.min().1 || y == room.max().1 {

@@ -53,5 +53,5 @@ fn setup_camera(mut commands: Commands) {
 pub enum GameState {
     AssetLoading,
     AssetsDone,
-    MapDrawn
+    MapDrawn,
 }

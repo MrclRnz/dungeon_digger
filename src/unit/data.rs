@@ -1,4 +1,4 @@
-use crate::map::data::{map_idx_f32, Map, TileType};
+use crate::map::data::Map;
 use bevy::prelude::*;
 
 const PLAYER_MOVEMENTSPEED: f32 = 1.5;
@@ -26,31 +26,27 @@ pub fn move_player(
     for mut trans in query.iter_mut() {
         if keyboard_input.pressed(KeyCode::Left) {
             let x = trans.translation.x - PLAYER_MOVEMENTSPEED;
-            if is_within_bounds(&map, x, trans.translation.y) {
+            if map.can_enter_tile_f32(x, trans.translation.y) {
                 trans.translation.x = x;
             }
         }
         if keyboard_input.pressed(KeyCode::Right) {
             let x = trans.translation.x + PLAYER_MOVEMENTSPEED;
-            if is_within_bounds(&map, x, trans.translation.y) {
+            if map.can_enter_tile_f32(x, trans.translation.y) {
                 trans.translation.x = x;
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {
             let y = trans.translation.y + PLAYER_MOVEMENTSPEED;
-            if is_within_bounds(&map, trans.translation.x, y) {
+            if map.can_enter_tile_f32(trans.translation.x, y) {
                 trans.translation.y = y;
             }
         }
         if keyboard_input.pressed(KeyCode::Down) {
             let y = trans.translation.y - PLAYER_MOVEMENTSPEED;
-            if is_within_bounds(&map, trans.translation.x, y) {
+            if map.can_enter_tile_f32(trans.translation.x, y) {
                 trans.translation.y = y;
             }
         }
     }
-}
-
-fn is_within_bounds(map: &Res<Map>, x: f32, y: f32) -> bool {
-    map.tiles[map_idx_f32(x, y)] == TileType::Floor
 }
