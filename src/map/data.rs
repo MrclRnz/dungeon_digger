@@ -12,6 +12,13 @@ pub enum TileType {
     Void,
 }
 
+pub enum Direction {
+    Up,
+    Down,
+    Left,
+    Right
+}
+
 #[derive(Clone, Debug)]
 struct Rectangle {
     x: i32,
@@ -92,12 +99,15 @@ pub fn try_map_idx(x: i32, y: i32) -> Option<usize> {
 }
 
 pub fn map_idx_f32(x: f32, y: f32) -> usize {
+    /* 
     let remainder = x % TILE_SIZE as f32;
     let mut x = x as usize / TILE_SIZE;
     if x as i32 > MAP_WIDTH / 2 && remainder > 0. {
         x += 1;
     }
+    */
 
+    let x = x as usize / TILE_SIZE;
     let y = y as usize / TILE_SIZE;
 
     y * MAP_WIDTH as usize + x
@@ -118,11 +128,11 @@ impl Map {
                 }
             }
             // Only take a room if its potential paths to other rooms has enough space from other walls
-            // So just make sure the center of the new room is at least 3 units away from all other room bounds
-            // 3 units are enough for a floor and two walls
+            // So just make sure the center of the new room is at least 4 units away from all other room bounds
+            // 4 units are enough for floors and walls
             let mut corridor_too_close_to_walls = false;
             for r in &rooms {
-                if room.center_x_units_away_from_bounds(r, 3) {
+                if room.center_x_units_away_from_bounds(r, 4) {
                     corridor_too_close_to_walls = true;
                     break;
                 }
@@ -154,7 +164,12 @@ impl Map {
         }
     }
 
-    pub fn can_enter_tile_f32(&self, x: f32, y: f32) -> bool {
+    pub fn can_enter_tile_f32(&self, mut x: f32, mut y: f32, dir: Direction) -> bool {
+        match dir {
+            Direction::Right => x += 32., // Wizard has width of 16 and scale of 2.0
+            Direction::Down => y += 1.,
+            _ => ()  
+        }
         self.tiles[map_idx_f32(x, y)] == TileType::Floor
     }
 }
