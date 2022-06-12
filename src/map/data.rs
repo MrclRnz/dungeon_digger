@@ -130,7 +130,8 @@ fn build_corridors(tiles: &mut Vec<TileType>, rooms: &Vec<Rectangle>) {
         let new = room.center();
 
         let mut rng = rand::thread_rng();
-        if rng.gen_range(0..=1) == 1 {
+        let horizontal_first =  rng.gen_range(0..=1) == 1;
+        if horizontal_first {
             apply_horizontal_tunnel(tiles, prev.0, new.0, prev.1);
             apply_vertical_tunnel(tiles, prev.1, new.1, new.0);
             // two special walls required that are the corner of the tunnels
@@ -144,11 +145,12 @@ fn build_corridors(tiles: &mut Vec<TileType>, rooms: &Vec<Rectangle>) {
             apply_vertical_tunnel(tiles, prev.1, new.1, prev.0);
             apply_horizontal_tunnel(tiles, prev.0, new.0, new.1);
             // two special walls required that are the corner of the tunnels
-            tiles[map_idx(prev.0, new.1 - 1)] = TileType::Wall;
-            if new.0 > prev.0 {
-                tiles[map_idx(prev.0 - 1, new.1 - 1)] = TileType::Wall;
-            } else {
+            if new.1 > prev.1 {
+                tiles[map_idx(prev.0, new.1 + 1)] = TileType::Wall;
                 tiles[map_idx(prev.0 - 1, new.1 + 1)] = TileType::Wall;
+            } else {
+                tiles[map_idx(prev.0, new.1 - 1)] = TileType::Wall;
+                tiles[map_idx(prev.0 - 1, new.1 - 1)] = TileType::Wall;
             }
         }
     }
