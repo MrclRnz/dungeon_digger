@@ -63,7 +63,7 @@ impl Map {
                     TileType::Floor => draw_floor(commands, &map_textures, x, y),
                     TileType::Wall => draw_wall(commands, &map_textures, self, x, y),
                     TileType::Void => {
-                        /* debugging purpose */
+                        /* debugging purpose 
                         commands.spawn_bundle(SpriteBundle {
                             texture: map_textures.ladder.clone(),
                             transform: Transform {
@@ -77,7 +77,7 @@ impl Map {
                             },
                             ..Default::default()
                         });
-                        
+                        */
                     }
                 }
             }

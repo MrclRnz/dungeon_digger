@@ -42,7 +42,14 @@ impl Rectangle {
         (self.x + self.width - 1, self.y + self.height - 1)
     }
 
-    fn intersect(&self, other_rect: &Rectangle) -> bool {
+    fn touches(&self, other_rect: &Rectangle) -> bool {
+        i32::abs(self.x - other_rect.max().0) < 2
+            || i32::abs(self.max().0 - other_rect.x) < 2
+            || i32::abs(self.y - other_rect.max().1) < 2
+            || i32::abs(self.max().1 - other_rect.y) < 2
+    }
+
+    fn intersects(&self, other_rect: &Rectangle) -> bool {
         self.min().0 <= other_rect.max().0
             && self.max().0 >= other_rect.min().0
             && self.min().1 <= other_rect.max().1
@@ -57,6 +64,13 @@ impl Rectangle {
             || x_bounds.contains(&other_rect.max().0)
             || y_bounds.contains(&other_rect.y)
             || y_bounds.contains(&other_rect.max().1)
+    }
+
+    fn center_x_units_away_from_bounds(&self, other_rect: &Rectangle, units: i32) -> bool {
+        i32::abs(self.center().0 - other_rect.x) < units
+            || i32::abs(self.center().0 - other_rect.max().0) < units
+            || i32::abs(self.center().1 - other_rect.y) < units
+            || i32::abs(self.center().1 - other_rect.max().1) < units
     }
 }
 
@@ -98,14 +112,24 @@ impl Map {
         let mut rooms = Vec::new();
         while rooms.len() < NUM_ROOMS {
             let room = generate_random_rectangle();
-            let mut overlap = false;
+            let mut overlap_or_touch = false;
             for r in &rooms {
-                if room.intersect(r) {
-                    overlap = true;
+                if room.intersects(r) || room.touches(r) {
+                    overlap_or_touch = true;
                     break;
                 }
             }
-            if !overlap {
+            // Only take a room if its potential paths to other rooms has enough space from other walls
+            // So just make sure the center of the new room is at least 3 units away from all other room bounds
+            // 3 units are enough for a floor and two walls
+            let mut corridor_too_close_to_walls = false;
+            for r in &rooms {
+                if room.center_x_units_away_from_bounds(r, 3) {
+                    corridor_too_close_to_walls = true;
+                    break;
+                }
+            }
+            if !overlap_or_touch && !corridor_too_close_to_walls {
                 if room.max().0 < MAP_WIDTH as i32 && room.max().1 < MAP_HEIGHT as i32 {
                     if rooms.is_empty() {
                         (player_starting_x, player_starting_y) = room.center();
@@ -246,7 +270,7 @@ fn should_be_true_when_rectangles_intersect() {
         height: 5,
     };
 
-    assert!(rectangle1.intersect(&rectangle2));
+    assert!(rectangle1.intersects(&rectangle2));
 }
 
 #[test]
@@ -265,7 +289,7 @@ fn should_be_false_when_rectangles_dont_intersect() {
         height: 5,
     };
 
-    assert!(!rectangle1.intersect(&rectangle2));
+    assert!(!rectangle1.intersects(&rectangle2));
 }
 
 #[test]
@@ -304,4 +328,46 @@ fn should_be_false_when_rectangles_bounds_dont_overlap() {
     };
 
     assert!(!rectangle1.bounds_overlap(&rectangle2));
+}
+
+#[test]
+fn should_be_true_when_rectangle_center_too_close_to_bounds() {
+    // center 3/3
+    let units = 3;
+    let rectangle1 = Rectangle {
+        x: 0,
+        y: 0,
+        width: 6,
+        height: 6,
+    };
+
+    let rectangle2 = Rectangle {
+        x: 2,
+        y: 2,
+        width: 5,
+        height: 5,
+    };
+
+    assert!(rectangle1.center_x_units_away_from_bounds(&rectangle2, units));
+}
+
+#[test]
+fn should_be_false_when_rectangle_center_not_too_close_to_bounds() {
+    // center 3/3
+    let units = 3;
+    let rectangle1 = Rectangle {
+        x: 0,
+        y: 0,
+        width: 6,
+        height: 6,
+    };
+
+    let rectangle2 = Rectangle {
+        x: 3,
+        y: 3,
+        width: 5,
+        height: 5,
+    };
+
+    assert!(rectangle1.center_x_units_away_from_bounds(&rectangle2, units));
 }
