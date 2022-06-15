@@ -16,7 +16,7 @@ pub enum Direction {
     Up,
     Down,
     Left,
-    Right
+    Right,
 }
 
 #[derive(Clone, Debug)]
@@ -63,16 +63,6 @@ impl Rectangle {
             && self.max().1 >= other_rect.min().1
     }
 
-    fn bounds_overlap(&self, other_rect: &Rectangle) -> bool {
-        let x_bounds = self.x..=self.max().0;
-        let y_bounds = self.y..=self.max().1;
-
-        x_bounds.contains(&other_rect.x)
-            || x_bounds.contains(&other_rect.max().0)
-            || y_bounds.contains(&other_rect.y)
-            || y_bounds.contains(&other_rect.max().1)
-    }
-
     fn center_x_units_away_from_bounds(&self, other_rect: &Rectangle, units: i32) -> bool {
         i32::abs(self.center().0 - other_rect.x) < units
             || i32::abs(self.center().0 - other_rect.max().0) < units
@@ -98,15 +88,21 @@ pub fn try_map_idx(x: i32, y: i32) -> Option<usize> {
     None
 }
 
+pub fn get_coordinate_from_index(index: usize) -> (i32, i32) {
+    let x = index as i32 % MAP_WIDTH;
+    let y = index as i32 / MAP_WIDTH;
+    (x, y)
+}
+
 pub fn map_idx_f32(x: f32, y: f32) -> usize {
-    /* 
+    /*
     let remainder = x % TILE_SIZE as f32;
     let mut x = x as usize / TILE_SIZE;
     if x as i32 > MAP_WIDTH / 2 && remainder > 0. {
         x += 1;
     }
     */
-
+    
     let x = x as usize / TILE_SIZE;
     let y = y as usize / TILE_SIZE;
 
@@ -153,7 +149,10 @@ impl Map {
         for room in &rooms {
             set_room_tiles(&mut tiles, room);
         }
+
         build_corridors(&mut tiles, &rooms);
+        set_walls(&mut tiles);
+
         Self {
             tiles,
             _rooms: rooms,
@@ -165,12 +164,55 @@ impl Map {
     }
 
     pub fn can_enter_tile_f32(&self, mut x: f32, mut y: f32, dir: Direction) -> bool {
+        /*
         match dir {
             Direction::Right => x += 32., // Wizard has width of 16 and scale of 2.0
             Direction::Down => y += 1.,
-            _ => ()  
+            _ => ()
         }
+        */
         self.tiles[map_idx_f32(x, y)] == TileType::Floor
+    }
+}
+
+fn set_walls(tiles: &mut [TileType]) {
+    let mut wall_indeces: Vec<usize> = Vec::new();
+    for (idx, tile_type) in tiles.iter().enumerate() {
+        if *tile_type == TileType::Floor {
+            // Go over all 4 neighbour tiles
+            let (x, y) = get_coordinate_from_index(idx);
+            let neighbour_indeces = vec![(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)];
+            let mut pushed_indeces: Vec<(i32, i32)> = Vec::new();
+            for (neighbour_x, neighbour_y) in neighbour_indeces {
+                match try_map_idx(neighbour_x, neighbour_y) {
+                    Some(index) => {
+                        if tiles[index] == TileType::Void {
+                            wall_indeces.push(map_idx(neighbour_x, neighbour_y));
+                            pushed_indeces.push((neighbour_x, neighbour_y));
+                        }
+                    }
+                    _ => (),
+                }
+            }
+            // It should never be more than 2 indeces that have been pushed
+            // If this is the case a corner is identified so a special wall has to be inserted between
+            let mut special_x = x;
+            let mut special_y = y;
+            if pushed_indeces.len() == 2 {
+                for (pushed_x, pushed_y) in pushed_indeces {
+                    if pushed_x != x {
+                        special_x = pushed_x
+                    }
+                    if pushed_y != y {
+                        special_y = pushed_y
+                    }
+                }
+                wall_indeces.push(map_idx(special_x, special_y));
+            }
+        }
+    }
+    for wall_index in wall_indeces {
+        tiles[wall_index] = TileType::Wall;
     }
 }
 
@@ -187,30 +229,9 @@ fn build_corridors(tiles: &mut [TileType], rooms: &[Rectangle]) {
         if horizontal_first {
             apply_horizontal_tunnel(tiles, prev.0, new.0, prev.1);
             apply_vertical_tunnel(tiles, prev.1, new.1, new.0);
-            // two special walls required that are the corner of the tunnels if a corner exists
-            // which is the case when the boundaries of the room don't overlap
-            if !room.bounds_overlap(&rooms[i - 1]) {
-                tiles[map_idx(new.0 + 1, prev.1)] = TileType::Wall;
-                if new.1 > prev.1 {
-                    tiles[map_idx(new.0 + 1, prev.1 - 1)] = TileType::Wall;
-                } else {
-                    tiles[map_idx(new.0 + 1, prev.1 + 1)] = TileType::Wall;
-                }
-            }
         } else {
             apply_vertical_tunnel(tiles, prev.1, new.1, prev.0);
             apply_horizontal_tunnel(tiles, prev.0, new.0, new.1);
-            // two special walls required that are the corner of the tunnels if a corner exists
-            // which is the case when the boundaries of the room don't overlap
-            if !room.bounds_overlap(&rooms[i - 1]) {
-                if new.1 > prev.1 {
-                    tiles[map_idx(prev.0, new.1 + 1)] = TileType::Wall;
-                    tiles[map_idx(prev.0 - 1, new.1 + 1)] = TileType::Wall;
-                } else {
-                    tiles[map_idx(prev.0, new.1 - 1)] = TileType::Wall;
-                    tiles[map_idx(prev.0 - 1, new.1 - 1)] = TileType::Wall;
-                }
-            }
         }
     }
 }
@@ -223,12 +244,6 @@ fn apply_vertical_tunnel(tiles: &mut [TileType], y1: i32, y2: i32, x: i32) {
             }
             tiles[idx] = TileType::Floor;
         }
-        if let Some(idx) = try_map_idx(x + 1, y) {
-            tiles[idx] = TileType::Wall;
-        }
-        if let Some(idx) = try_map_idx(x - 1, y) {
-            tiles[idx] = TileType::Wall;
-        }
     }
 }
 
@@ -240,32 +255,22 @@ fn apply_horizontal_tunnel(tiles: &mut [TileType], x1: i32, x2: i32, y: i32) {
             }
             tiles[idx] = TileType::Floor;
         }
-        if let Some(idx) = try_map_idx(x, y + 1) {
-            tiles[idx] = TileType::Wall;
-        }
-        if let Some(idx) = try_map_idx(x, y - 1) {
-            tiles[idx] = TileType::Wall;
-        }
     }
 }
 
 fn set_room_tiles(tiles: &mut [TileType], room: &Rectangle) {
     for y in room.min().1..=room.max().1 {
         for x in room.min().0..=room.max().0 {
-            if x == room.min().0 || x == room.max().0 || y == room.min().1 || y == room.max().1 {
-                tiles[map_idx(x, y)] = TileType::Wall;
-            } else {
-                tiles[map_idx(x, y)] = TileType::Floor;
-            }
+            tiles[map_idx(x, y)] = TileType::Floor;
         }
     }
 }
 
 fn generate_random_rectangle() -> Rectangle {
     let mut rng = rand::thread_rng();
-    let x = rng.gen_range(0..MAP_WIDTH - MAX_ROOM_WIDTH as i32);
-    let y = rng.gen_range(0..MAP_HEIGHT - MAX_ROOM_HEIGHT as i32);
-    // Always keep space for walls that will be develop into the inner bounds of the room
+    // Always keep space for walls that appear next to the floor bounds of a room
+    let x = rng.gen_range(1..MAP_WIDTH - 1 - MAX_ROOM_WIDTH as i32);
+    let y = rng.gen_range(1..MAP_HEIGHT - 1 - MAX_ROOM_HEIGHT as i32);
     let width = rng.gen_range(6..MAX_ROOM_WIDTH as i32);
     let height = rng.gen_range(6..MAX_ROOM_HEIGHT as i32);
 
@@ -309,44 +314,6 @@ fn should_be_false_when_rectangles_dont_intersect() {
     };
 
     assert!(!rectangle1.intersects(&rectangle2));
-}
-
-#[test]
-fn should_be_true_when_rectangles_bounds_overlap() {
-    let rectangle1 = Rectangle {
-        x: 0,
-        y: 0,
-        width: 5,
-        height: 5,
-    };
-
-    let rectangle2 = Rectangle {
-        x: 4,
-        y: 5,
-        width: 5,
-        height: 5,
-    };
-
-    assert!(rectangle1.bounds_overlap(&rectangle2));
-}
-
-#[test]
-fn should_be_false_when_rectangles_bounds_dont_overlap() {
-    let rectangle1 = Rectangle {
-        x: 0,
-        y: 0,
-        width: 5,
-        height: 5,
-    };
-
-    let rectangle2 = Rectangle {
-        x: 5,
-        y: 5,
-        width: 5,
-        height: 5,
-    };
-
-    assert!(!rectangle1.bounds_overlap(&rectangle2));
 }
 
 #[test]
