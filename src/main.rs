@@ -1,19 +1,25 @@
 mod map;
-mod unit;
+mod player;
+mod enemy;
+mod collision;
+mod global_systems;
+mod global_components;
 
 use crate::map::MapPlugin;
 use bevy::prelude::*;
 use bevy_asset_loader::AssetLoader;
 use bevy_inspector_egui::WorldInspectorPlugin;
+use enemy::{EnemyPlugin, textures::EnemyAssets};
+use global_systems::move_randomly;
 use map::textures::MapAssets;
-use unit::{textures::PlayerAssets, UnitPlugin};
+use player::{textures::PlayerAssets, PlayerPlugin};
 
 pub const WINDOW_WIDTH: usize = 1600;
 pub const WINDOW_HEIGHT: usize = 900;
 pub const TILE_SIZE: usize = 32;
 
-const MAP_WIDTH: i32 = 80;
-const MAP_HEIGHT: i32 = 50;
+const MAP_WIDTH: i32 = 100;
+const MAP_HEIGHT: i32 = 70;
 pub const NUM_TILES: usize = (MAP_WIDTH * MAP_HEIGHT) as usize;
 const NUM_ROOMS: usize = 5;
 const MAX_ROOM_WIDTH: usize = 15;
@@ -28,6 +34,7 @@ fn main() {
         .continue_to_state(GameState::AssetsDone)
         .with_collection::<MapAssets>()
         .with_collection::<PlayerAssets>()
+        .with_collection::<EnemyAssets>()
         .build(&mut app);
     app.insert_resource(WindowDescriptor {
         title: "Dungeon Digger".to_string(),
@@ -39,9 +46,11 @@ fn main() {
     .add_state(GameState::AssetLoading)
     .add_plugins(DefaultPlugins)
     .add_plugin(MapPlugin)
-    .add_plugin(UnitPlugin)
+    .add_plugin(PlayerPlugin)
+    .add_plugin(EnemyPlugin)
     .add_plugin(WorldInspectorPlugin::new())
     .add_startup_system(setup_camera)
+    .add_system(move_randomly)
     .run();
 }
 

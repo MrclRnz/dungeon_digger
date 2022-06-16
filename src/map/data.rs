@@ -20,7 +20,7 @@ pub enum Direction {
 }
 
 #[derive(Clone, Debug)]
-struct Rectangle {
+pub struct Rectangle {
     x: i32,
     y: i32,
     width: i32,
@@ -37,7 +37,7 @@ impl Rectangle {
         }
     }
 
-    fn center(&self) -> (i32, i32) {
+    pub fn center(&self) -> (i32, i32) {
         (self.x + self.width / 2, self.y + self.height / 2)
     }
 
@@ -73,7 +73,7 @@ impl Rectangle {
 
 pub struct Map {
     pub tiles: Vec<TileType>,
-    _rooms: Vec<Rectangle>,
+    pub rooms: Vec<Rectangle>,
     pub player_start_pos: Vec2,
 }
 
@@ -138,7 +138,7 @@ impl Map {
                 && room.max().0 < MAP_WIDTH as i32
                 && room.max().1 < MAP_HEIGHT as i32
             {
-                if rooms.is_empty() {
+                if room.center().0 < player_starting_x || player_starting_x == 0 {
                     (player_starting_x, player_starting_y) = room.center();
                 }
                 rooms.push(room);
@@ -155,7 +155,7 @@ impl Map {
 
         Self {
             tiles,
-            _rooms: rooms,
+            rooms,
             player_start_pos: Vec2::new(
                 (player_starting_x * TILE_SIZE as i32) as f32,
                 (player_starting_y * TILE_SIZE as i32) as f32,

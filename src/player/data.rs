@@ -21,19 +21,21 @@ pub fn camera_follow(
 pub fn move_player(
     keyboard_input: Res<Input<KeyCode>>,
     map: Res<Map>,
-    mut query: Query<&mut Transform, With<Player>>,
+    mut query: Query<(&mut Transform, &mut TextureAtlasSprite), With<Player>>,
 ) {
-    for mut trans in query.iter_mut() {
+    for (mut trans, mut sprite) in query.iter_mut() {
         if keyboard_input.pressed(KeyCode::Left) {
             let x = trans.translation.x - PLAYER_MOVEMENTSPEED;
             if map.can_enter_tile_f32(x, trans.translation.y, Direction::Left) {
                 trans.translation.x = x;
+                sprite.flip_x = true;
             }
         }
         if keyboard_input.pressed(KeyCode::Right) {
             let x = trans.translation.x + PLAYER_MOVEMENTSPEED;
             if map.can_enter_tile_f32(x, trans.translation.y, Direction::Right) {
                 trans.translation.x = x;
+                sprite.flip_x = false;
             }
         }
         if keyboard_input.pressed(KeyCode::Up) {

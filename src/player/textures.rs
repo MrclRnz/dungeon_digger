@@ -1,5 +1,5 @@
 use crate::map::data::Map;
-use crate::unit::data::Player;
+use crate::player::data::Player;
 use bevy::prelude::*;
 use bevy_asset_loader::AssetCollection;
 
@@ -42,7 +42,7 @@ pub fn spawn_player(
             texture_atlas: atlas_handle,
             ..default()
         })
-        .insert(AnimationTimer(Timer::from_seconds(0.1, true)))
+        .insert(AnimationTimer(Timer::from_seconds(0.15, true)))
         .insert(Player);
 }
 
