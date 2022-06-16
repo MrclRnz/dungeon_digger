@@ -1,4 +1,4 @@
-use crate::{enemy::data::Enemy, map::data::Map, TILE_SIZE, global_components::MovingRandomly};
+use crate::{enemy::data::Enemy, map::data::Map, TILE_SIZE, global_components::{MovingRandomly, RoomBound}};
 use bevy::prelude::*;
 use bevy_asset_loader::AssetCollection;
 
@@ -46,7 +46,8 @@ pub fn spawn_enemy(
             })
             .insert(AnimationTimer(Timer::from_seconds(0.15, true)))
             .insert(Enemy)
-            .insert(MovingRandomly);
+            .insert(MovingRandomly)
+            .insert(RoomBound);
     }
 }
 
