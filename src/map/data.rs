@@ -50,10 +50,10 @@ impl Rectangle {
     }
 
     fn touches(&self, other_rect: &Rectangle) -> bool {
-        i32::abs(self.x - other_rect.max().0) < 2
-            || i32::abs(self.max().0 - other_rect.x) < 2
-            || i32::abs(self.y - other_rect.max().1) < 2
-            || i32::abs(self.max().1 - other_rect.y) < 2
+        i32::abs(self.x - other_rect.max().0) < 4
+            || i32::abs(self.max().0 - other_rect.x) < 4
+            || i32::abs(self.y - other_rect.max().1) < 4
+            || i32::abs(self.max().1 - other_rect.y) < 4
     }
 
     fn intersects(&self, other_rect: &Rectangle) -> bool {
@@ -172,9 +172,9 @@ impl Map {
         // If the sprites were drawn with bottom left anchor it would also be possible to use the
         // intersect function self written for Rectangle using the translation and size.
         match dir {
-            Direction::Right => x += 32.,
+            Direction::Right => x += 30.,
             //Direction::Left => x -= 16.,
-            Direction::Up => y += 21.,
+            Direction::Up => y += 16.,
             Direction::Down => y -= 5.,
             _ => (),
         }

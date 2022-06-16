@@ -224,6 +224,7 @@ pub fn draw_wall(
     }
 }
 
+// This should be deleted and already determined when setting the walls
 fn determine_wall_type(map: &Map, x: i32, y: i32) -> WallType {
     // determine the 4 neighbours of the given wall
     let right_neighbour = match try_map_idx(x + 1, y) {
