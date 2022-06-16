@@ -169,6 +169,8 @@ impl Map {
         // It might be worth to implement the bevy collision function in the future.
         // Also remember to allow a small steps on lower walls because the player sprite is bigger than
         // a tile so the player can go through tunnels.
+        // If the sprites were drawn with bottom left anchor it would also be possible to use the
+        // intersect function self written for Rectangle using the translation and size.
         match dir {
             Direction::Right => x += 32.,
             //Direction::Left => x -= 16.,
