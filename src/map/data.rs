@@ -164,13 +164,18 @@ impl Map {
     }
 
     pub fn can_enter_tile_f32(&self, mut x: f32, mut y: f32, dir: Direction) -> bool {
-        /*
+        // This should be heavily refactored to function with the sizes of the unit and
+        // the tiles. Both are anchored with their center causing problems calculating the collision.
+        // It might be worth to implement the bevy collision function in the future.
+        // Also remember to allow a small steps on lower walls because the player sprite is bigger than
+        // a tile so the player can go through tunnels.
         match dir {
-            Direction::Right => x += 32., // Wizard has width of 16 and scale of 2.0
-            Direction::Down => y += 1.,
+            Direction::Right => x += 32.,
+            //Direction::Left => x -= 16.,
+            Direction::Up => y += 21.,
+            Direction::Down => y -= 5.,
             _ => ()
         }
-        */
         self.tiles[map_idx_f32(x, y)] == TileType::Floor
     }
 }
