@@ -1,7 +1,6 @@
 use crate::map::data::Map;
 use crate::unit::data::Player;
 use bevy::prelude::*;
-use bevy::sprite::Anchor;
 use bevy_asset_loader::AssetCollection;
 
 #[derive(AssetCollection)]

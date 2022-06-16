@@ -1,4 +1,4 @@
-use crate::map::data::{Map, Direction};
+use crate::map::data::{Direction, Map};
 use bevy::prelude::*;
 
 const PLAYER_MOVEMENTSPEED: f32 = 2.0;

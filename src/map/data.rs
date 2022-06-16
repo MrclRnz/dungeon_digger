@@ -102,7 +102,7 @@ pub fn map_idx_f32(x: f32, y: f32) -> usize {
         x += 1;
     }
     */
-    
+
     let x = x as usize / TILE_SIZE;
     let y = y as usize / TILE_SIZE;
 
@@ -176,7 +176,7 @@ impl Map {
             //Direction::Left => x -= 16.,
             Direction::Up => y += 21.,
             Direction::Down => y -= 5.,
-            _ => ()
+            _ => (),
         }
         self.tiles[map_idx_f32(x, y)] == TileType::Floor
     }
@@ -191,14 +191,11 @@ fn set_walls(tiles: &mut [TileType]) {
             let neighbour_indeces = vec![(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)];
             let mut pushed_indeces: Vec<(i32, i32)> = Vec::new();
             for (neighbour_x, neighbour_y) in neighbour_indeces {
-                match try_map_idx(neighbour_x, neighbour_y) {
-                    Some(index) => {
-                        if tiles[index] == TileType::Void {
-                            wall_indeces.push(map_idx(neighbour_x, neighbour_y));
-                            pushed_indeces.push((neighbour_x, neighbour_y));
-                        }
+                if let Some(index) = try_map_idx(neighbour_x, neighbour_y) {
+                    if tiles[index] == TileType::Void {
+                        wall_indeces.push(map_idx(neighbour_x, neighbour_y));
+                        pushed_indeces.push((neighbour_x, neighbour_y));
                     }
-                    _ => (),
                 }
             }
             // It should never be more than 2 indeces that have been pushed
