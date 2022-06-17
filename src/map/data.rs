@@ -12,6 +12,7 @@ pub enum TileType {
     Void,
 }
 
+#[derive(Clone, Copy, PartialEq)]
 pub enum Direction {
     Up,
     Down,
