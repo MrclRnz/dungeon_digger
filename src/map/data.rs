@@ -1,5 +1,5 @@
-use crate::{MAX_ROOM_HEIGHT, MAX_ROOM_WIDTH};
-use bevy::math::Vec2;
+use crate::{MAX_ROOM_HEIGHT, MAX_ROOM_WIDTH, global_components::Direction};
+use bevy::math::{Vec2, Vec3};
 use rand::Rng;
 use std::cmp::{max, min};
 
@@ -10,14 +10,6 @@ pub enum TileType {
     Wall,
     Floor,
     Void,
-}
-
-#[derive(Clone, Copy, PartialEq)]
-pub enum Direction {
-    Up,
-    Down,
-    Left,
-    Right,
 }
 
 #[derive(Clone, Debug)]
@@ -164,7 +156,7 @@ impl Map {
         }
     }
 
-    pub fn can_enter_tile_f32(&self, mut x: f32, mut y: f32, dir: Direction) -> bool {
+    pub fn can_enter_tile_f32(&self, destination: Vec3, dir: Direction) -> bool {
         // This should be heavily refactored to function with the sizes of the unit and
         // the tiles. Both are anchored with their center causing problems calculating the collision.
         // It might be worth to implement the bevy collision function in the future.
@@ -172,6 +164,8 @@ impl Map {
         // a tile so the player can go through tunnels.
         // If the sprites were drawn with bottom left anchor it would also be possible to use the
         // intersect function self written for Rectangle using the translation and size.
+        let mut x = destination.x;
+        let mut y = destination.y;
         match dir {
             Direction::Right => x += 30.,
             //Direction::Left => x -= 16.,

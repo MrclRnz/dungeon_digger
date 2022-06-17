@@ -3,7 +3,7 @@ use bevy::prelude::*;
 
 use self::textures::{animate_idle_enemy, spawn_enemy};
 
-mod data;
+pub mod data;
 pub mod textures;
 
 pub struct EnemyPlugin;

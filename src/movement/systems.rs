@@ -1,12 +1,25 @@
+use bevy::ecs::event::Events;
 use bevy::prelude::*;
 use rand::Rng;
 
-use crate::{
-    global_components::MovingRandomly,
-    map::data::{Direction, Map},
-};
+use crate::map::data::{Map};
+use crate::global_components::Direction;
+use super::components::{MoveEvent, MovingRandomly};
 
 const STEPS_IN_SAME_DIRECTION: i32 = 15;
+
+pub fn move_entity(
+    mut move_events: ResMut<Events<MoveEvent>>,
+    mut transforms: Query<&mut Transform>,
+) {
+    move_events.update(); // Do I need this??
+    for move_event in move_events.drain() {
+        if let Ok(mut trans) = transforms.get_mut(move_event.entity) {
+            trans.translation = move_event.destination;
+        }
+    }
+
+}
 
 pub fn move_randomly(
     map: Res<Map>,
@@ -36,7 +49,7 @@ pub fn move_randomly(
                 Direction::Down => transform.translation - Vec3::new(0., moving_randomly.speed, 0.),
             };
 
-            if map.can_enter_tile_f32(destination.x, destination.y, moving_randomly.current_direction) {
+            if map.can_enter_tile_f32(destination, moving_randomly.current_direction) {
                 transform.translation.x = destination.x;
                 transform.translation.y = destination.y;
             }

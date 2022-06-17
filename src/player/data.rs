@@ -1,4 +1,5 @@
-use crate::map::data::{Direction, Map};
+use crate::{map::data::Map, collision::components::Hitbox, enemy::data::Enemy, movement::components::MoveEvent};
+use crate::global_components::Direction;
 use bevy::prelude::*;
 
 const PLAYER_MOVEMENTSPEED: f32 = 2.0;
@@ -21,34 +22,39 @@ pub fn camera_follow(
 pub fn move_player(
     keyboard_input: Res<Input<KeyCode>>,
     map: Res<Map>,
-    mut query: Query<(&mut Transform, &mut TextureAtlasSprite), With<Player>>,
+    mut move_events: EventWriter<MoveEvent>,
+    mut player_query: Query<(Entity, &mut Transform, &mut TextureAtlasSprite), With<Player>>,
 ) {
-    for (mut trans, mut sprite) in query.iter_mut() {
+    for (entity, mut trans, mut sprite) in player_query.iter_mut() {
+        let mut destination = trans.translation;
+        let mut direction = Direction::Up;
         if keyboard_input.pressed(KeyCode::Left) {
-            let x = trans.translation.x - PLAYER_MOVEMENTSPEED;
-            if map.can_enter_tile_f32(x, trans.translation.y, Direction::Left) {
-                trans.translation.x = x;
-                sprite.flip_x = true;
-            }
+            destination -= Vec3::new(PLAYER_MOVEMENTSPEED, 0., 0.);
+            direction = Direction::Left;
+            sprite.flip_x = true;
         }
         if keyboard_input.pressed(KeyCode::Right) {
-            let x = trans.translation.x + PLAYER_MOVEMENTSPEED;
-            if map.can_enter_tile_f32(x, trans.translation.y, Direction::Right) {
-                trans.translation.x = x;
-                sprite.flip_x = false;
-            }
+            destination += Vec3::new(PLAYER_MOVEMENTSPEED, 0., 0.);
+            direction = Direction::Right;
+            sprite.flip_x = false;
         }
         if keyboard_input.pressed(KeyCode::Up) {
-            let y = trans.translation.y + PLAYER_MOVEMENTSPEED;
-            if map.can_enter_tile_f32(trans.translation.x, y, Direction::Up) {
-                trans.translation.y = y;
-            }
+            destination += Vec3::new(0., PLAYER_MOVEMENTSPEED, 0.);
+            direction = Direction::Up;
         }
         if keyboard_input.pressed(KeyCode::Down) {
-            let y = trans.translation.y - PLAYER_MOVEMENTSPEED;
-            if map.can_enter_tile_f32(trans.translation.x, y, Direction::Down) {
-                trans.translation.y = y;
-            }
+            destination -= Vec3::new(0., PLAYER_MOVEMENTSPEED, 0.);
+            direction = Direction::Down;
+        }
+
+        move_events.send(MoveEvent::new(
+            entity,
+            destination,
+            direction,
+        ));
+
+        if map.can_enter_tile_f32(destination, direction) {
+            trans.translation = destination;
         }
     }
 }

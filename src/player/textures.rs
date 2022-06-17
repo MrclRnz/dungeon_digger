@@ -1,3 +1,4 @@
+use crate::collision::components::Hitbox;
 use crate::map::data::Map;
 use crate::player::data::Player;
 use bevy::prelude::*;
@@ -31,10 +32,11 @@ pub fn spawn_player(
     let x = map.player_start_pos.x;
     let y = map.player_start_pos.y;
 
+    let pos = Vec3::new(x, y, 0.4);
     commands
         .spawn_bundle(SpriteSheetBundle {
             transform: Transform {
-                translation: Vec3::new(x, y, 0.4),
+                translation: pos,
                 scale: Vec3::splat(2.0),
                 ..default()
             },
@@ -43,7 +45,8 @@ pub fn spawn_player(
             ..default()
         })
         .insert(AnimationTimer(Timer::from_seconds(0.15, true)))
-        .insert(Player);
+        .insert(Player)
+        .insert(Hitbox {pos,width: 32.,height: 42.,});
 }
 
 pub fn animate_run_player(

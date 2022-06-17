@@ -1,8 +1,7 @@
 use crate::{
     enemy::data::Enemy,
-    global_components::{MovingRandomly, RoomBound},
-    map::data::{Map, Direction},
-    TILE_SIZE,
+    global_components::{RoomBound, Direction},
+    TILE_SIZE, collision::components::Hitbox, movement::components::MovingRandomly, map::data::Map,
 };
 use bevy::prelude::*;
 use bevy_asset_loader::AssetCollection;
@@ -38,10 +37,11 @@ pub fn spawn_enemy(
         let (x, y) = room.center();
         let x = (x * TILE_SIZE as i32) as f32;
         let y = (y * TILE_SIZE as i32) as f32;
+        let pos = Vec3::new(x, y, 0.4);
         commands
             .spawn_bundle(SpriteSheetBundle {
                 transform: Transform {
-                    translation: Vec3::new(x, y, 0.4),
+                    translation: pos,
                     scale: Vec3::splat(2.0),
                     ..default()
                 },
@@ -57,7 +57,8 @@ pub fn spawn_enemy(
                 current_direction: Direction::Up,
                 step_counter: 0,
             })
-            .insert(RoomBound);
+            .insert(RoomBound)
+            .insert(Hitbox{pos, width: 30., height: 30.});
     }
 }
 

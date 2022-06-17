@@ -2,16 +2,17 @@ mod map;
 mod player;
 mod enemy;
 mod collision;
-mod global_systems;
 mod global_components;
+mod movement;
 
 use crate::map::MapPlugin;
 use bevy::prelude::*;
 use bevy_asset_loader::AssetLoader;
 use bevy_inspector_egui::WorldInspectorPlugin;
+use collision::CollisionPlugin;
 use enemy::{EnemyPlugin, textures::EnemyAssets};
-use global_systems::move_randomly;
 use map::textures::MapAssets;
+use movement::MovementPlugin;
 use player::{textures::PlayerAssets, PlayerPlugin};
 
 pub const WINDOW_WIDTH: usize = 1600;
@@ -48,9 +49,10 @@ fn main() {
     .add_plugin(MapPlugin)
     .add_plugin(PlayerPlugin)
     .add_plugin(EnemyPlugin)
+    .add_plugin(CollisionPlugin)
+    .add_plugin(MovementPlugin)
     .add_plugin(WorldInspectorPlugin::new())
     .add_startup_system(setup_camera)
-    .add_system(move_randomly)
     .run();
 }
 
