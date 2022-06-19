@@ -46,7 +46,11 @@ pub fn spawn_player(
         })
         .insert(AnimationTimer(Timer::from_seconds(0.15, true)))
         .insert(Player)
-        .insert(Hitbox {pos,width: 32.,height: 42.,});
+        .insert(Hitbox {
+            pos,
+            width: 32.,
+            height: 42.,
+        });
 }
 
 pub fn animate_run_player(

@@ -1,16 +1,16 @@
-mod map;
-mod player;
-mod enemy;
 mod collision;
+mod enemy;
 mod global_components;
+mod map;
 mod movement;
+mod player;
 
 use crate::map::MapPlugin;
 use bevy::prelude::*;
 use bevy_asset_loader::AssetLoader;
 use bevy_inspector_egui::WorldInspectorPlugin;
 use collision::CollisionPlugin;
-use enemy::{EnemyPlugin, textures::EnemyAssets};
+use enemy::{textures::EnemyAssets, EnemyPlugin};
 use map::textures::MapAssets;
 use movement::MovementPlugin;
 use player::{textures::PlayerAssets, PlayerPlugin};

@@ -1,7 +1,10 @@
 use crate::{
+    collision::components::Hitbox,
     enemy::data::Enemy,
-    global_components::{RoomBound, Direction},
-    TILE_SIZE, collision::components::Hitbox, movement::components::MovingRandomly, map::data::Map,
+    global_components::{Direction, RoomBound},
+    map::data::Map,
+    movement::components::MovingRandomly,
+    TILE_SIZE,
 };
 use bevy::prelude::*;
 use bevy_asset_loader::AssetCollection;
@@ -58,7 +61,11 @@ pub fn spawn_enemy(
                 step_counter: 0,
             })
             .insert(RoomBound)
-            .insert(Hitbox{pos, width: 30., height: 30.});
+            .insert(Hitbox {
+                pos,
+                width: 30.,
+                height: 30.,
+            });
     }
 }
 

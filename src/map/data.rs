@@ -1,5 +1,8 @@
-use crate::{MAX_ROOM_HEIGHT, MAX_ROOM_WIDTH, global_components::Direction};
+use crate::movement::components::MoveEvent;
+use crate::{global_components::Direction, MAX_ROOM_HEIGHT, MAX_ROOM_WIDTH};
+use bevy::ecs::event::Events;
 use bevy::math::{Vec2, Vec3};
+use bevy::prelude::*;
 use rand::Rng;
 use std::cmp::{max, min};
 
@@ -166,6 +169,7 @@ impl Map {
         // intersect function self written for Rectangle using the translation and size.
         let mut x = destination.x;
         let mut y = destination.y;
+        println!("Hello?");
         match dir {
             Direction::Right => x += 30.,
             //Direction::Left => x -= 16.,
@@ -174,6 +178,18 @@ impl Map {
             _ => (),
         }
         self.tiles[map_idx_f32(x, y)] == TileType::Floor
+    }
+}
+
+pub fn check_wall_collision(mut move_events: ResMut<Events<MoveEvent>>, map: Res<Map>) {
+    let mut event_buffer: Vec<MoveEvent> = Vec::new();
+    for mut move_event in move_events.drain() {
+        if !map.can_enter_tile_f32(move_event.destination, move_event.direction) {
+            move_event.viable = false;
+            break;
+        }
+
+        event_buffer.push(move_event);
     }
 }
 

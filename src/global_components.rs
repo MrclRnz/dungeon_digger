@@ -1,9 +1,9 @@
-use bevy::{prelude::Component};
+use bevy::prelude::Component;
 
 #[derive(Component)]
 pub struct RoomBound;
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Direction {
     Up,
     Down,
