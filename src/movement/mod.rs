@@ -1,7 +1,7 @@
-use bevy::{ecs::event::Events, prelude::*};
+use bevy::prelude::*;
 
 use self::{
-    components::{BlocksMovement, MoveEvent},
+    components::{BlocksMovement, MoveAttemptEvent, MoveConfirmedEvent},
     systems::{move_entity, move_randomly},
 };
 
@@ -12,8 +12,9 @@ pub struct MovementPlugin;
 
 impl Plugin for MovementPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<Events<MoveEvent>>()
-            .add_system(move_randomly.label(BlocksMovement))
+        app.add_event::<MoveAttemptEvent>()
+            .add_event::<MoveConfirmedEvent>()
+            .add_system(move_randomly.before(BlocksMovement))
             .add_system(move_entity.after(BlocksMovement));
     }
 }

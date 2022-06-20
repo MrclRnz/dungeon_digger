@@ -1,29 +1,42 @@
-use bevy::ecs::event::Events;
-use bevy::prelude::*;
+use std::collections::HashMap;
+
+use bevy::{prelude::*, reflect::Uuid};
 use rand::Rng;
 
-use super::components::{MoveEvent, MovingRandomly};
+use super::components::{MoveAttemptEvent, MoveConfirmedEvent, MovingRandomly};
 use crate::global_components::Direction;
-use crate::map::data::Map;
 
 const STEPS_IN_SAME_DIRECTION: i32 = 15;
 
+// Is it possible to get these at runtime?
+const BLOCKS_MOVEMENT_LABELLED_SYSTEMS: usize = 2;
+
 pub fn move_entity(
-    mut move_events: ResMut<Events<MoveEvent>>,
+    mut move_events: EventReader<MoveConfirmedEvent>,
     mut transforms: Query<&mut Transform>,
 ) {
-    move_events.update(); // Do I need this??
-    for move_event in move_events.drain() {
-        if move_event.viable {
-            if let Ok(mut trans) = transforms.get_mut(move_event.entity) {
-                trans.translation = move_event.destination;
-            }
+    let grouped_events = move_events.iter().fold(
+        HashMap::new(),
+        |mut acc: HashMap<Uuid, Vec<MoveConfirmedEvent>>, move_event: &MoveConfirmedEvent| {
+            acc.entry((*move_event).id).or_default().push(*move_event);
+            acc
+        },
+    );
+
+    let viable_movements: Vec<&MoveConfirmedEvent> = grouped_events
+        .iter()
+        .filter(|&(_, grouped_events)| grouped_events.len() == BLOCKS_MOVEMENT_LABELLED_SYSTEMS)
+        .map(|(_, grouped_events)| grouped_events.get(0).unwrap())
+        .collect();
+    for viable_move in viable_movements {
+        if let Ok(mut trans) = transforms.get_mut(viable_move.entity) {
+            trans.translation = viable_move.destination;
         }
     }
 }
 
 pub fn move_randomly(
-    mut move_events: EventWriter<MoveEvent>,
+    mut move_events: EventWriter<MoveAttemptEvent>,
     time: Res<Time>,
     mut random_move_query: Query<(Entity, &mut Transform, &mut MovingRandomly)>,
 ) {
@@ -50,7 +63,13 @@ pub fn move_randomly(
                 Direction::Up => transform.translation + Vec3::new(0., moving_randomly.speed, 0.),
                 Direction::Down => transform.translation - Vec3::new(0., moving_randomly.speed, 0.),
             };
-            move_events.send(MoveEvent::new(entity, destination, moving_randomly.current_direction));
+            /* 
+            move_events.send(MoveAttemptEvent::new(
+                entity,
+                destination,
+                moving_randomly.current_direction,
+            ));
+            */
             moving_randomly.step_counter += 1;
         }
     }

@@ -1,5 +1,5 @@
 use crate::global_components::Direction;
-use crate::{map::data::Map, movement::components::MoveEvent};
+use crate::{movement::components::MoveAttemptEvent};
 use bevy::prelude::*;
 
 const PLAYER_MOVEMENTSPEED: f32 = 2.0;
@@ -21,34 +21,32 @@ pub fn camera_follow(
 
 pub fn move_player(
     keyboard_input: Res<Input<KeyCode>>,
-    map: Res<Map>,
-    mut move_events: EventWriter<MoveEvent>,
+    mut move_events: EventWriter<MoveAttemptEvent>,
     mut player_query: Query<(Entity, &mut Transform, &mut TextureAtlasSprite), With<Player>>,
 ) {
     for (entity, trans, mut sprite) in player_query.iter_mut() {
         let mut destination = trans.translation;
-        let mut direction = Direction::Up;
         if keyboard_input.pressed(KeyCode::Left) {
             destination -= Vec3::new(PLAYER_MOVEMENTSPEED, 0., 0.);
-            direction = Direction::Left;
+            let direction = Direction::Left;
             sprite.flip_x = true;
-            move_events.send(MoveEvent::new(entity, destination, direction));
+            move_events.send(MoveAttemptEvent::new(entity, destination, direction));
         }
         if keyboard_input.pressed(KeyCode::Right) {
             destination += Vec3::new(PLAYER_MOVEMENTSPEED, 0., 0.);
-            direction = Direction::Right;
+            let direction = Direction::Right;
             sprite.flip_x = false;
-            move_events.send(MoveEvent::new(entity, destination, direction));
+            move_events.send(MoveAttemptEvent::new(entity, destination, direction));
         }
         if keyboard_input.pressed(KeyCode::Up) {
             destination += Vec3::new(0., PLAYER_MOVEMENTSPEED, 0.);
-            direction = Direction::Up;
-            move_events.send(MoveEvent::new(entity, destination, direction));
+            let direction = Direction::Up;
+            move_events.send(MoveAttemptEvent::new(entity, destination, direction));
         }
         if keyboard_input.pressed(KeyCode::Down) {
             destination -= Vec3::new(0., PLAYER_MOVEMENTSPEED, 0.);
-            direction = Direction::Down;
-            move_events.send(MoveEvent::new(entity, destination, direction));
+            let direction = Direction::Down;
+            move_events.send(MoveAttemptEvent::new(entity, destination, direction));
         }
     }
 }

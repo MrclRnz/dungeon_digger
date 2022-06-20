@@ -1,6 +1,5 @@
-use crate::movement::components::MoveEvent;
+use crate::movement::components::{MoveAttemptEvent, MoveConfirmedEvent};
 use crate::{global_components::Direction, MAX_ROOM_HEIGHT, MAX_ROOM_WIDTH};
-use bevy::ecs::event::Events;
 use bevy::math::{Vec2, Vec3};
 use bevy::prelude::*;
 use rand::Rng;
@@ -169,7 +168,6 @@ impl Map {
         // intersect function self written for Rectangle using the translation and size.
         let mut x = destination.x;
         let mut y = destination.y;
-        println!("Hello?");
         match dir {
             Direction::Right => x += 30.,
             //Direction::Left => x -= 16.,
@@ -181,15 +179,16 @@ impl Map {
     }
 }
 
-pub fn check_wall_collision(mut move_events: ResMut<Events<MoveEvent>>, map: Res<Map>) {
-    let mut event_buffer: Vec<MoveEvent> = Vec::new();
-    for mut move_event in move_events.drain() {
-        if !map.can_enter_tile_f32(move_event.destination, move_event.direction) {
-            move_event.viable = false;
+pub fn check_wall_collision(
+    mut move_attempts: EventReader<MoveAttemptEvent>,
+    mut move_confirmed_writer: EventWriter<MoveConfirmedEvent>,
+    map: Res<Map>,
+) {
+    for move_attempt in move_attempts.iter() {
+        if map.can_enter_tile_f32(move_attempt.destination, move_attempt.direction) {
+            move_confirmed_writer.send(MoveConfirmedEvent::from_attempt(move_attempt));
             break;
         }
-
-        event_buffer.push(move_event);
     }
 }
 

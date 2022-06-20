@@ -10,7 +10,10 @@ pub struct CollisionPlugin;
 
 impl Plugin for CollisionPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(update_hitbox_pos)
-            .add_system(check_enemy_collision.label(BlocksMovement));
+        app.add_system(update_hitbox_pos).add_system(
+            check_enemy_collision
+                .label(BlocksMovement)
+                .after(update_hitbox_pos),
+        );
     }
 }

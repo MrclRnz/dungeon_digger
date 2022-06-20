@@ -6,7 +6,7 @@ mod movement;
 mod player;
 
 use crate::map::MapPlugin;
-use bevy::prelude::*;
+use bevy::{prelude::*, diagnostic::{LogDiagnosticsPlugin, FrameTimeDiagnosticsPlugin}};
 use bevy_asset_loader::AssetLoader;
 use bevy_inspector_egui::WorldInspectorPlugin;
 use collision::CollisionPlugin;
@@ -52,6 +52,8 @@ fn main() {
     .add_plugin(CollisionPlugin)
     .add_plugin(MovementPlugin)
     .add_plugin(WorldInspectorPlugin::new())
+    //.add_plugin(LogDiagnosticsPlugin::default())
+    //.add_plugin(FrameTimeDiagnosticsPlugin::default())
     .add_startup_system(setup_camera)
     .run();
 }

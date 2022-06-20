@@ -1,24 +1,42 @@
 use crate::global_components::Direction;
-use bevy::prelude::*;
+use bevy::{prelude::*, reflect::Uuid};
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq, SystemLabel)]
 pub struct BlocksMovement;
 
 #[derive(Debug)]
-pub struct MoveEvent {
+pub struct MoveAttemptEvent {
+    pub id: Uuid,
     pub entity: Entity,
     pub destination: Vec3,
     pub direction: Direction,
-    pub viable: bool,
 }
 
-impl MoveEvent {
+impl MoveAttemptEvent {
     pub fn new(entity: Entity, destination: Vec3, direction: Direction) -> Self {
-        MoveEvent {
+        MoveAttemptEvent {
+            id: Uuid::new_v4(),
             entity,
             destination,
             direction,
-            viable: true,
+        }
+    }
+}
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct MoveConfirmedEvent {
+    pub id: Uuid,
+    pub entity: Entity,
+    pub destination: Vec3,
+    pub direction: Direction,
+}
+
+impl MoveConfirmedEvent {
+    pub fn from_attempt(attempt: &MoveAttemptEvent) -> Self {
+        Self {
+            id: attempt.id,
+            entity: attempt.entity,
+            destination: attempt.destination,
+            direction: attempt.direction,
         }
     }
 }
