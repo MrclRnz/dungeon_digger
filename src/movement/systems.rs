@@ -63,13 +63,11 @@ pub fn move_randomly(
                 Direction::Up => transform.translation + Vec3::new(0., moving_randomly.speed, 0.),
                 Direction::Down => transform.translation - Vec3::new(0., moving_randomly.speed, 0.),
             };
-            /* 
             move_events.send(MoveAttemptEvent::new(
                 entity,
                 destination,
                 moving_randomly.current_direction,
             ));
-            */
             moving_randomly.step_counter += 1;
         }
     }

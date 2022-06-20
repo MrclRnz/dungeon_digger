@@ -6,7 +6,10 @@ mod movement;
 mod player;
 
 use crate::map::MapPlugin;
-use bevy::{prelude::*, diagnostic::{LogDiagnosticsPlugin, FrameTimeDiagnosticsPlugin}};
+use bevy::{
+    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
+    prelude::*,
+};
 use bevy_asset_loader::AssetLoader;
 use bevy_inspector_egui::WorldInspectorPlugin;
 use collision::CollisionPlugin;

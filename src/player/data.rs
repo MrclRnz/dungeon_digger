@@ -1,5 +1,5 @@
 use crate::global_components::Direction;
-use crate::{movement::components::MoveAttemptEvent};
+use crate::movement::components::MoveAttemptEvent;
 use bevy::prelude::*;
 
 const PLAYER_MOVEMENTSPEED: f32 = 2.0;
@@ -22,8 +22,11 @@ pub fn camera_follow(
 pub fn move_player(
     keyboard_input: Res<Input<KeyCode>>,
     mut move_events: EventWriter<MoveAttemptEvent>,
-    mut player_query: Query<(Entity, &mut Transform, &mut TextureAtlasSprite), With<Player>>,
+    mut player_query: Query<(Entity, &Transform, &mut TextureAtlasSprite), With<Player>>,
 ) {
+    if !keyboard_input.any_pressed([KeyCode::Left, KeyCode::Right, KeyCode::Up, KeyCode::Down]) {
+        return;
+    }
     for (entity, trans, mut sprite) in player_query.iter_mut() {
         let mut destination = trans.translation;
         if keyboard_input.pressed(KeyCode::Left) {

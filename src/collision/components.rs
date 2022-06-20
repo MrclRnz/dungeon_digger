@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy::sprite::collide_aabb::collide;
 
-#[derive(Component, PartialEq, Debug)]
+#[derive(Component, Clone, PartialEq, Debug)]
 pub struct Hitbox {
     pub pos: Vec3,
     pub width: f32,
