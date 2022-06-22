@@ -1,7 +1,7 @@
-use crate::movement::components::BlocksMovement;
+use crate::movement::components::MovementInput;
 use bevy::prelude::*;
 
-use self::systems::{check_enemy_collision, update_hitbox_pos};
+use self::systems::{update_hitbox_pos};
 
 pub mod components;
 pub mod systems;
@@ -10,10 +10,6 @@ pub struct CollisionPlugin;
 
 impl Plugin for CollisionPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(update_hitbox_pos).add_system(
-            check_enemy_collision
-                .label(BlocksMovement)
-                .after(update_hitbox_pos),
-        );
+        app.add_system(update_hitbox_pos.label(MovementInput));
     }
 }

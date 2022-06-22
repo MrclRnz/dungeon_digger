@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::movement::components::{MoveAttemptEvent, MoveConfirmedEvent};
+use crate::movement::components::MoveEvent;
 
 use super::components::Hitbox;
 
@@ -10,25 +10,19 @@ pub fn update_hitbox_pos(mut query: Query<(&Transform, &mut Hitbox)>) {
     }
 }
 
-pub fn check_enemy_collision(
-    mut move_attempts: EventReader<MoveAttemptEvent>,
-    mut move_confirmed_writer: EventWriter<MoveConfirmedEvent>,
-    hitboxes: Query<&Hitbox>,
-) {
-    for move_attempt in move_attempts.iter() {
-        if let Ok(moving_hitbox) = hitboxes.get(move_attempt.entity) {
-            let mut destination_hitbox = moving_hitbox.clone();
-            destination_hitbox.pos = move_attempt.destination;
-            let mut collides_with_hitbox = false;
-            for other_hitbox in hitboxes.iter() {
-                if moving_hitbox != other_hitbox && destination_hitbox.collides_with(other_hitbox) {
-                    collides_with_hitbox = true;
-                    break;
-                }
-            }
-            if !collides_with_hitbox {
-                move_confirmed_writer.send(MoveConfirmedEvent::from_attempt(move_attempt));
-            }
+pub fn collides_with_hitbox<E: MoveEvent>(move_attempt: &E, hitboxes: &Query<&Hitbox>) -> bool {
+    let moving_hitbox = match hitboxes.get(move_attempt.get_entity()) {
+        Ok(moving_entity) => moving_entity,
+        Err(_) => panic!("Hitbox for moving entity not found!"),
+    };
+    let mut destination_hitbox = moving_hitbox.clone();
+    destination_hitbox.pos = move_attempt.get_destination();
+    let mut collides_with_hitbox = false;
+    for other_hitbox in hitboxes.iter() {
+        if moving_hitbox != other_hitbox && destination_hitbox.collides_with(other_hitbox) {
+            collides_with_hitbox = true;
+            break;
         }
     }
+    return collides_with_hitbox;
 }

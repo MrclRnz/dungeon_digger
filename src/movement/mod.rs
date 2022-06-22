@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use self::{
-    components::{BlocksMovement, MoveAttemptEvent, MoveConfirmedEvent},
+    components::{RandomMoveAttempt, MovementInput},
     systems::{move_entity, move_randomly},
 };
 
@@ -12,9 +12,8 @@ pub struct MovementPlugin;
 
 impl Plugin for MovementPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<MoveAttemptEvent>()
-            .add_event::<MoveConfirmedEvent>()
-            .add_system(move_randomly.before(BlocksMovement))
-            .add_system(move_entity.after(BlocksMovement));
+        app.add_event::<RandomMoveAttempt>()
+            .add_system(move_randomly.label(MovementInput))
+            .add_system(move_entity.after(MovementInput));
     }
 }

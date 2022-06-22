@@ -1,7 +1,5 @@
-use crate::movement::components::{MoveAttemptEvent, MoveConfirmedEvent};
 use crate::{global_components::Direction, MAX_ROOM_HEIGHT, MAX_ROOM_WIDTH};
 use bevy::math::{Vec2, Vec3};
-use bevy::prelude::*;
 use rand::Rng;
 use std::cmp::{max, min};
 
@@ -176,19 +174,6 @@ impl Map {
             _ => (),
         }
         self.tiles[map_idx_f32(x, y)] == TileType::Floor
-    }
-}
-
-pub fn check_wall_collision(
-    mut move_attempts: EventReader<MoveAttemptEvent>,
-    mut move_confirmed_writer: EventWriter<MoveConfirmedEvent>,
-    map: Res<Map>,
-) {
-    for move_attempt in move_attempts.iter() {
-        if map.can_enter_tile_f32(move_attempt.destination, move_attempt.direction) {
-            move_confirmed_writer.send(MoveConfirmedEvent::from_attempt(move_attempt));
-            break;
-        }
     }
 }
 
