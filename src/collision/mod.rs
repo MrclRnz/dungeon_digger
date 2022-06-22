@@ -1,7 +1,7 @@
 use crate::movement::components::MovementInput;
 use bevy::prelude::*;
 
-use self::systems::{update_hitbox_pos};
+use self::systems::update_hitbox_pos;
 
 pub mod components;
 pub mod systems;

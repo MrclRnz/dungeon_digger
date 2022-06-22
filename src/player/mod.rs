@@ -1,7 +1,6 @@
 pub mod data;
 pub mod textures;
 
-
 use crate::movement::components::MovementInput;
 use crate::player::data::{camera_follow, move_player};
 use crate::player::textures::{animate_run_player, spawn_player};

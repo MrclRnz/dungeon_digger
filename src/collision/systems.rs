@@ -24,5 +24,5 @@ pub fn collides_with_hitbox<E: MoveEvent>(move_attempt: &E, hitboxes: &Query<&Hi
             break;
         }
     }
-    return collides_with_hitbox;
+    collides_with_hitbox
 }

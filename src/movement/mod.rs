@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use self::{
-    components::{RandomMoveAttempt, MovementInput},
+    components::{MovementInput, RandomMoveAttempt},
     systems::{move_entity, move_randomly},
 };
 

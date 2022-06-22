@@ -4,7 +4,6 @@ use bevy::{prelude::*, reflect::Uuid};
 #[derive(Clone, Debug, Hash, PartialEq, Eq, SystemLabel)]
 pub struct MovementInput;
 
-
 #[derive(Component)]
 pub struct MovingRandomly {
     pub timer: Timer,
@@ -12,7 +11,6 @@ pub struct MovingRandomly {
     pub current_direction: Direction,
     pub step_counter: i32,
 }
-
 
 pub trait MoveEvent {
     fn get_id(&self) -> Uuid;
