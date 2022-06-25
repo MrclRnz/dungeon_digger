@@ -1,10 +1,10 @@
 use crate::GameState;
 use bevy::prelude::*;
 
-use self::textures::{animate_idle_enemy, spawn_enemy};
+use self::systems::{animate_idle_enemy, spawn_enemy};
 
-pub mod data;
-pub mod textures;
+pub mod components;
+pub mod systems;
 
 pub struct EnemyPlugin;
 

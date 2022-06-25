@@ -3,12 +3,25 @@ use crate::movement::components::MoveEvent;
 use bevy::prelude::*;
 use bevy::reflect::Uuid;
 
+use bevy_asset_loader::AssetCollection;
+
 const PLAYER_MOVEMENTSPEED: f32 = 2.0;
+
+#[derive(AssetCollection)]
+pub struct PlayerAssets {
+    #[asset(path = "frames/units/male_wizard/run", collection(typed))]
+    pub male_wizard_run: Vec<Handle<Image>>,
+    #[asset(path = "frames/units/male_wizard/idle", collection(typed))]
+    pub male_wizard_idle: Vec<Handle<Image>>,
+}
+
+#[derive(Component, Deref, DerefMut)]
+pub struct AnimationTimer(pub Timer);
 
 #[derive(Component)]
 pub struct Player {
     pub idle_atlas: Handle<TextureAtlas>,
-    pub run_atlas: Handle<TextureAtlas>
+    pub run_atlas: Handle<TextureAtlas>,
 }
 
 pub struct KeyboardMoveAttempt {
@@ -62,10 +75,17 @@ pub fn camera_follow(
 pub fn move_player(
     keyboard_input: Res<Input<KeyCode>>,
     mut move_events: EventWriter<KeyboardMoveAttempt>,
-    mut player_query: Query<(Entity, &Transform, &mut TextureAtlasSprite, &mut Handle<TextureAtlas>, &Player)>,
+    mut player_query: Query<(
+        Entity,
+        &Transform,
+        &mut TextureAtlasSprite,
+        &mut Handle<TextureAtlas>,
+        &Player,
+    )>,
 ) {
     for (entity, trans, mut sprite, mut handle, player) in player_query.iter_mut() {
-        if !keyboard_input.any_pressed([KeyCode::Left, KeyCode::Right, KeyCode::Up, KeyCode::Down]) {
+        if !keyboard_input.any_pressed([KeyCode::Left, KeyCode::Right, KeyCode::Up, KeyCode::Down])
+        {
             *handle = player.idle_atlas.clone();
             return;
         }

@@ -1,10 +1,10 @@
 mod collision;
+mod combat;
 mod enemy;
 mod global_components;
 mod map;
 mod movement;
 mod player;
-mod combat;
 
 use crate::map::MapPlugin;
 use bevy::{
@@ -12,13 +12,16 @@ use bevy::{
     prelude::*,
 };
 use bevy_asset_loader::AssetLoader;
-use bevy_inspector_egui::{WorldInspectorPlugin, RegisterInspectable};
+use bevy_inspector_egui::{RegisterInspectable, WorldInspectorPlugin};
 use collision::CollisionPlugin;
-use combat::{CombatPlugin, components::{HealthAssets, Health}};
-use enemy::{textures::EnemyAssets, EnemyPlugin};
-use map::textures::MapAssets;
+use combat::{
+    components::{Health, HealthAssets},
+    CombatPlugin,
+};
+use enemy::{components::EnemyAssets, EnemyPlugin};
+use map::components::MapAssets;
 use movement::MovementPlugin;
-use player::{textures::PlayerAssets, PlayerPlugin};
+use player::{components::PlayerAssets, PlayerPlugin};
 
 pub const WINDOW_WIDTH: usize = 1600;
 pub const WINDOW_HEIGHT: usize = 900;
@@ -59,7 +62,7 @@ fn main() {
     .add_plugin(MovementPlugin)
     .add_plugin(CombatPlugin)
     .add_plugin(WorldInspectorPlugin::new())
-    .register_inspectable::<Health>() // 
+    .register_inspectable::<Health>() //
     //.add_plugin(LogDiagnosticsPlugin::default())
     //.add_plugin(FrameTimeDiagnosticsPlugin::default())
     .add_startup_system(setup_camera)

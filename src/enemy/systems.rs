@@ -1,23 +1,16 @@
+use bevy::prelude::*;
+
 use crate::{
     collision::components::Hitbox,
     combat::components::Health,
-    enemy::data::Enemy,
-    global_components::{Direction, RoomBound, Rendered},
-    map::data::Map,
+    enemy::components::Enemy,
+    global_components::{Direction, Rendered, RoomBound},
+    map::components::Map,
     movement::components::MovingRandomly,
     TILE_SIZE,
 };
-use bevy::prelude::*;
-use bevy_asset_loader::AssetCollection;
 
-#[derive(AssetCollection)]
-pub struct EnemyAssets {
-    #[asset(path = "frames/units/big_zombie/run", collection(typed))]
-    big_zombie_run: Vec<Handle<Image>>,
-}
-
-#[derive(Component, Deref, DerefMut)]
-pub struct AnimationTimer(Timer);
+use super::components::{AnimationTimer, EnemyAssets};
 
 pub fn spawn_enemy(
     mut commands: Commands,
@@ -33,15 +26,20 @@ pub fn spawn_enemy(
     }
 
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
-    let size = texture_atlas.textures.iter().map(|t| t.size()).reduce(|mut acc, size| {
-        if size.x > acc.x {
-            acc.x = size.x;
-        }
-        if size.y > acc.y {
-            acc.y = size.y;
-        }
-        acc
-    }).expect("No textures in texture atlas?!");
+    let size = texture_atlas
+        .textures
+        .iter()
+        .map(|t| t.size())
+        .reduce(|mut acc, size| {
+            if size.x > acc.x {
+                acc.x = size.x;
+            }
+            if size.y > acc.y {
+                acc.y = size.y;
+            }
+            acc
+        })
+        .expect("No textures in texture atlas?!");
     let atlas_handle = texture_atlases.add(texture_atlas);
 
     let mut rooms = map.rooms.clone();
@@ -71,7 +69,7 @@ pub fn spawn_enemy(
                 step_counter: 0,
             })
             .insert(RoomBound)
-            .insert(Rendered{size})
+            .insert(Rendered { size })
             .insert(Hitbox {
                 pos,
                 width: 30.,

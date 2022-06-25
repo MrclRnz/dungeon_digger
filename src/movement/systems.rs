@@ -5,8 +5,8 @@ use super::components::{MovingRandomly, RandomMoveAttempt};
 use crate::{
     collision::{components::Hitbox, systems::collides_with_hitbox},
     global_components::Direction,
-    map::data::Map,
-    player::data::KeyboardMoveAttempt,
+    map::components::Map,
+    player::components::KeyboardMoveAttempt,
 };
 
 const STEPS_IN_SAME_DIRECTION: i32 = 15;

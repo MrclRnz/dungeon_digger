@@ -1,13 +1,13 @@
-pub mod data;
-pub mod textures;
+pub mod components;
+pub mod systems;
 
 use crate::movement::components::MovementInput;
-use crate::player::data::{camera_follow, move_player};
-use crate::player::textures::{animate_run_player, spawn_player};
+use crate::player::components::{camera_follow, move_player};
+use crate::player::systems::{animate_run_player, spawn_player};
 use crate::GameState;
 use bevy::prelude::*;
 
-use self::data::KeyboardMoveAttempt;
+use self::components::KeyboardMoveAttempt;
 
 pub struct PlayerPlugin;
 

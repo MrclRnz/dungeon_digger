@@ -5,7 +5,7 @@ use bevy::{ecs::schedule::ShouldRun, prelude::*};
 
 use crate::GameState;
 
-use self::systems::{spawn_health_bar, render_damage};
+use self::systems::{render_damage, spawn_health_bar};
 
 pub struct CombatPlugin;
 

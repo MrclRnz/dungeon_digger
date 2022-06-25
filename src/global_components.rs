@@ -1,4 +1,4 @@
-use bevy::{prelude::Component, math::Vec2};
+use bevy::{math::Vec2, prelude::Component};
 
 #[derive(Component)]
 pub struct RoomBound;
@@ -13,5 +13,5 @@ pub enum Direction {
 
 #[derive(Component)]
 pub struct Rendered {
-    pub size: Vec2
+    pub size: Vec2,
 }

@@ -1,7 +1,7 @@
-pub mod data;
-pub mod textures;
+pub mod components;
+pub mod systems;
 
-use self::{data::Map, textures::*};
+use self::{components::Map, systems::*};
 use crate::GameState;
 use bevy::prelude::*;
 
