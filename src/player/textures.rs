@@ -9,6 +9,8 @@ use bevy_asset_loader::AssetCollection;
 pub struct PlayerAssets {
     #[asset(path = "frames/units/male_wizard/run", collection(typed))]
     male_wizard_run: Vec<Handle<Image>>,
+    #[asset(path = "frames/units/male_wizard/idle", collection(typed))]
+    male_wizard_idle: Vec<Handle<Image>>,
 }
 
 #[derive(Component, Deref, DerefMut)]
@@ -28,7 +30,16 @@ pub fn spawn_player(
     }
 
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
-    let atlas_handle = texture_atlases.add(texture_atlas);
+    let run_atlas_handle = texture_atlases.add(texture_atlas);
+
+    let mut texture_atlas_builder = TextureAtlasBuilder::default();
+    for handle in &player_textures.male_wizard_idle {
+        let texture = textures.get(handle).unwrap();
+        texture_atlas_builder.add_texture(handle.clone_weak(), texture);
+    }
+
+    let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
+    let idle_atlas_handle = texture_atlases.add(texture_atlas);
 
     let x = map.player_start_pos.x;
     let y = map.player_start_pos.y;
@@ -42,11 +53,14 @@ pub fn spawn_player(
                 ..default()
             },
             sprite: TextureAtlasSprite::new(0),
-            texture_atlas: atlas_handle,
+            texture_atlas: idle_atlas_handle.clone(),
             ..default()
         })
         .insert(AnimationTimer(Timer::from_seconds(0.15, true)))
-        .insert(Player)
+        .insert(Player {
+            idle_atlas: idle_atlas_handle,
+            run_atlas: run_atlas_handle
+        })
         .insert(Health::new(30))
         .insert(Hitbox {
             pos,

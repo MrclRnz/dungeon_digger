@@ -6,7 +6,10 @@ use bevy::reflect::Uuid;
 const PLAYER_MOVEMENTSPEED: f32 = 2.0;
 
 #[derive(Component)]
-pub struct Player;
+pub struct Player {
+    pub idle_atlas: Handle<TextureAtlas>,
+    pub run_atlas: Handle<TextureAtlas>
+}
 
 pub struct KeyboardMoveAttempt {
     pub id: Uuid,
@@ -59,12 +62,13 @@ pub fn camera_follow(
 pub fn move_player(
     keyboard_input: Res<Input<KeyCode>>,
     mut move_events: EventWriter<KeyboardMoveAttempt>,
-    mut player_query: Query<(Entity, &Transform, &mut TextureAtlasSprite), With<Player>>,
+    mut player_query: Query<(Entity, &Transform, &mut TextureAtlasSprite, &mut Handle<TextureAtlas>, &Player)>,
 ) {
-    if !keyboard_input.any_pressed([KeyCode::Left, KeyCode::Right, KeyCode::Up, KeyCode::Down]) {
-        return;
-    }
-    for (entity, trans, mut sprite) in player_query.iter_mut() {
+    for (entity, trans, mut sprite, mut handle, player) in player_query.iter_mut() {
+        if !keyboard_input.any_pressed([KeyCode::Left, KeyCode::Right, KeyCode::Up, KeyCode::Down]) {
+            *handle = player.idle_atlas.clone();
+            return;
+        }
         let mut destination = trans.translation;
         if keyboard_input.pressed(KeyCode::Left) {
             destination -= Vec3::new(PLAYER_MOVEMENTSPEED, 0., 0.);
@@ -88,5 +92,6 @@ pub fn move_player(
             let direction = Direction::Down;
             move_events.send(KeyboardMoveAttempt::new(entity, destination, direction));
         }
+        *handle = player.run_atlas.clone();
     }
 }
