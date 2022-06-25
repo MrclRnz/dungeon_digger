@@ -12,9 +12,9 @@ use bevy::{
     prelude::*,
 };
 use bevy_asset_loader::AssetLoader;
-use bevy_inspector_egui::WorldInspectorPlugin;
+use bevy_inspector_egui::{WorldInspectorPlugin, RegisterInspectable};
 use collision::CollisionPlugin;
-use combat::{CombatPlugin, components::HealthAssets};
+use combat::{CombatPlugin, components::{HealthAssets, Health}};
 use enemy::{textures::EnemyAssets, EnemyPlugin};
 use map::textures::MapAssets;
 use movement::MovementPlugin;
@@ -59,6 +59,7 @@ fn main() {
     .add_plugin(MovementPlugin)
     .add_plugin(CombatPlugin)
     .add_plugin(WorldInspectorPlugin::new())
+    .register_inspectable::<Health>() // 
     //.add_plugin(LogDiagnosticsPlugin::default())
     //.add_plugin(FrameTimeDiagnosticsPlugin::default())
     .add_startup_system(setup_camera)
