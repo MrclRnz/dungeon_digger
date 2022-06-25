@@ -4,6 +4,7 @@ mod global_components;
 mod map;
 mod movement;
 mod player;
+mod combat;
 
 use crate::map::MapPlugin;
 use bevy::{
@@ -13,6 +14,7 @@ use bevy::{
 use bevy_asset_loader::AssetLoader;
 use bevy_inspector_egui::WorldInspectorPlugin;
 use collision::CollisionPlugin;
+use combat::{CombatPlugin, components::HealthAssets};
 use enemy::{textures::EnemyAssets, EnemyPlugin};
 use map::textures::MapAssets;
 use movement::MovementPlugin;
@@ -39,6 +41,7 @@ fn main() {
         .with_collection::<MapAssets>()
         .with_collection::<PlayerAssets>()
         .with_collection::<EnemyAssets>()
+        .with_collection::<HealthAssets>()
         .build(&mut app);
     app.insert_resource(WindowDescriptor {
         title: "Dungeon Digger".to_string(),
@@ -54,6 +57,7 @@ fn main() {
     .add_plugin(EnemyPlugin)
     .add_plugin(CollisionPlugin)
     .add_plugin(MovementPlugin)
+    .add_plugin(CombatPlugin)
     .add_plugin(WorldInspectorPlugin::new())
     //.add_plugin(LogDiagnosticsPlugin::default())
     //.add_plugin(FrameTimeDiagnosticsPlugin::default())

@@ -1,5 +1,6 @@
 use crate::{
     collision::components::Hitbox,
+    combat::components::Health,
     enemy::data::Enemy,
     global_components::{Direction, RoomBound},
     map::data::Map,
@@ -65,7 +66,8 @@ pub fn spawn_enemy(
                 pos,
                 width: 30.,
                 height: 30.,
-            });
+            })
+            .insert(Health::new(30));
     }
 }
 

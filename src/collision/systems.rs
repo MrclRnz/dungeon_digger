@@ -4,6 +4,7 @@ use crate::movement::components::MoveEvent;
 
 use super::components::Hitbox;
 
+/// This should be removed in favor of putting the component as a child of the unit
 pub fn update_hitbox_pos(mut query: Query<(&Transform, &mut Hitbox)>) {
     for (pos, mut hitbox) in query.iter_mut() {
         hitbox.pos = pos.translation;

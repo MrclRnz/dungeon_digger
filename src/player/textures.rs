@@ -1,4 +1,5 @@
 use crate::collision::components::Hitbox;
+use crate::combat::components::Health;
 use crate::map::data::Map;
 use crate::player::data::Player;
 use bevy::prelude::*;
@@ -46,6 +47,7 @@ pub fn spawn_player(
         })
         .insert(AnimationTimer(Timer::from_seconds(0.15, true)))
         .insert(Player)
+        .insert(Health::new(30))
         .insert(Hitbox {
             pos,
             width: 32.,
