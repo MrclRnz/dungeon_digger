@@ -1,5 +1,7 @@
+use crate::global_components::Rendered;
+
 use super::components::{Health, HealthAssets, HealthUI, MissingHealthUI};
-use bevy::{prelude::*, sprite::Anchor};
+use bevy::{prelude::*, prelude::Sprite, sprite::Anchor};
 
 const HEALTH_BAR_WIDTH: f32 = 30.0;
 const HEALTH_BAR_X_START: f32 = -(HEALTH_BAR_WIDTH / 2.);
@@ -7,9 +9,10 @@ const HEALTH_BAR_X_START: f32 = -(HEALTH_BAR_WIDTH / 2.);
 pub fn spawn_health_bar(
     mut commands: Commands,
     health_textures: Res<HealthAssets>,
-    health: Query<Entity, Added<Health>>,
+    health: Query<(Entity, &Rendered), Added<Health>>,
+
 ) {
-    for entity in health.iter() {
+    for (entity, rendered) in health.iter() {
         commands
             .entity(entity)
             .with_children(|parent| {
@@ -17,7 +20,7 @@ pub fn spawn_health_bar(
                     .spawn_bundle(SpriteBundle {
                         texture: health_textures.missing_health.clone(),
                         transform: Transform {
-                            translation: Vec3::new(0., 10., 0.6),
+                            translation: Vec3::new(0., (rendered.size.y / 2.) +  3., 0.6),
                             scale: Vec3::splat(1.0),
                             ..default()
                         },
@@ -34,7 +37,7 @@ pub fn spawn_health_bar(
                     .spawn_bundle(SpriteBundle {
                         texture: health_textures.health.clone(),
                         transform: Transform {
-                            translation: Vec3::new(HEALTH_BAR_X_START, 10., 0.7),
+                            translation: Vec3::new(HEALTH_BAR_X_START, (rendered.size.y / 2.) +  3., 0.7),
                             scale: Vec3::splat(1.0),
                             ..default()
                         },

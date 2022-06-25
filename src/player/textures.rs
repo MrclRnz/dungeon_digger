@@ -1,5 +1,6 @@
 use crate::collision::components::Hitbox;
 use crate::combat::components::Health;
+use crate::global_components::Rendered;
 use crate::map::data::Map;
 use crate::player::data::Player;
 use bevy::prelude::*;
@@ -30,6 +31,17 @@ pub fn spawn_player(
     }
 
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
+    let mut size = texture_atlas.textures.iter().map(|t| t.size()).reduce(|mut acc, size| {
+        if size.x > acc.x {
+            acc.x = size.x;
+        }
+        if size.y > acc.y {
+            acc.y = size.y;
+        }
+        acc
+    }).expect("No textures in texture atlas?!");
+    // The player images has a lot of transparent pixels above the head
+    size.y -= 5.;
     let run_atlas_handle = texture_atlases.add(texture_atlas);
 
     let mut texture_atlas_builder = TextureAtlasBuilder::default();
@@ -62,6 +74,7 @@ pub fn spawn_player(
             run_atlas: run_atlas_handle
         })
         .insert(Health::new(30))
+        .insert(Rendered{size})
         .insert(Hitbox {
             pos,
             width: 32.,
