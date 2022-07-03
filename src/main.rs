@@ -5,6 +5,7 @@ mod global_components;
 mod map;
 mod movement;
 mod player;
+mod events;
 
 use crate::map::MapPlugin;
 use bevy::{
