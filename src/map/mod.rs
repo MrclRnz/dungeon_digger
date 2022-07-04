@@ -2,7 +2,7 @@ pub mod components;
 pub mod systems;
 
 use self::{components::Map, systems::*};
-use crate::{GameState, movement::components::BlocksMovement};
+use crate::{movement::components::BlocksMovement, GameState};
 use bevy::prelude::*;
 
 pub struct MapPlugin;

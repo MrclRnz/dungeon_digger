@@ -1,4 +1,4 @@
-use crate::{global_components::Direction, events::RuledEvent};
+use crate::{events::RuledEvent, global_components::Direction};
 use bevy::prelude::*;
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq, SystemLabel)]
@@ -11,7 +11,6 @@ pub struct MovingRandomly {
     pub current_direction: Direction,
     pub step_counter: i32,
 }
-
 
 pub struct MoveAttempt {
     pub entity: Entity,
@@ -26,13 +25,12 @@ impl MoveAttempt {
             entity,
             destination,
             direction,
-            viable: true
+            viable: true,
         }
     }
 }
 
 impl RuledEvent for MoveAttempt {
-
     fn is_viable(&self) -> bool {
         self.viable
     }

@@ -17,10 +17,7 @@ pub fn render_map(
     game_state.set(GameState::MapDrawn).unwrap();
 }
 
-pub fn check_wall_collision(
-    mut move_events: ResMut<RuledEventQueue<MoveAttempt>>,
-    map: Res<Map>,
-) {
+pub fn check_wall_collision(mut move_events: ResMut<RuledEventQueue<MoveAttempt>>, map: Res<Map>) {
     for move_attempt in move_events.read_events() {
         if !map.can_enter_tile_f32(move_attempt.destination, move_attempt.direction) {
             move_attempt.viable = false;

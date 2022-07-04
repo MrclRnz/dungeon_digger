@@ -2,11 +2,7 @@ use bevy::prelude::*;
 use rand::Rng;
 
 use super::components::{MoveAttempt, MovingRandomly};
-use crate::{
-    events::RuledEventQueue,
-    global_components::Direction,
-    map::components::Map,
-};
+use crate::{events::RuledEventQueue, global_components::Direction, map::components::Map};
 
 const STEPS_IN_SAME_DIRECTION: i32 = 15;
 
