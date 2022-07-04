@@ -1,8 +1,5 @@
 use bevy::{math::Vec2, prelude::Component};
 
-#[derive(Component)]
-pub struct RoomBound;
-
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Direction {
     Up,
@@ -12,6 +9,5 @@ pub enum Direction {
 }
 
 #[derive(Component)]
-pub struct Rendered {
-    pub size: Vec2,
-}
+pub struct Rectangular(pub Vec2);
+

@@ -61,6 +61,9 @@ pub enum TileType {
     Void,
 }
 
+#[derive(Component)]
+pub struct RoomBound;
+
 #[derive(Clone, Debug)]
 pub struct Rectangle {
     x: i32,
@@ -70,7 +73,7 @@ pub struct Rectangle {
 }
 
 impl Rectangle {
-    fn new(x: i32, y: i32, width: i32, height: i32) -> Self {
+    pub fn new(x: i32, y: i32, width: i32, height: i32) -> Self {
         Self {
             x,
             y,
@@ -98,7 +101,7 @@ impl Rectangle {
             || i32::abs(self.max().1 - other_rect.y) < 4
     }
 
-    fn intersects(&self, other_rect: &Rectangle) -> bool {
+    pub fn intersects(&self, other_rect: &Rectangle) -> bool {
         self.min().0 <= other_rect.max().0
             && self.max().0 >= other_rect.min().0
             && self.min().1 <= other_rect.max().1
@@ -203,6 +206,18 @@ impl Map {
                 (player_starting_y * TILE_SIZE as i32) as f32,
             ),
         }
+    }
+
+    /// This should use proper collision algorithm
+    pub fn within_room(&self, destination: Vec3) -> bool {
+        let (target_x, target_y) = get_coordinate_from_index(map_idx_f32(destination.x, destination.y));
+        let target_rectangle = Rectangle::new(target_x, target_y, 1, 1);
+        for room in self.rooms.iter() {
+            if room.intersects(&target_rectangle) {
+                return true;
+            }
+        }
+        false
     }
 
     pub fn can_enter_tile_f32(&self, destination: Vec3, dir: Direction) -> bool {

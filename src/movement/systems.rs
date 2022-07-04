@@ -2,13 +2,12 @@ use bevy::prelude::*;
 use rand::Rng;
 
 use super::components::{MoveAttempt, MovingRandomly};
-use crate::{events::RuledEventQueue, global_components::Direction, map::components::Map};
+use crate::{events::RuledEventQueue, global_components::Direction};
 
 const STEPS_IN_SAME_DIRECTION: i32 = 15;
 
 pub fn move_entity(
     mut move_events: ResMut<RuledEventQueue<MoveAttempt>>,
-    map: Res<Map>,
     mut transforms: Query<&mut Transform>,
 ) {
     for move_attempt in move_events.read_events() {

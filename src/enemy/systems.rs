@@ -4,8 +4,8 @@ use crate::{
     collision::components::Hitbox,
     combat::components::Health,
     enemy::components::Enemy,
-    global_components::{Direction, Rendered, RoomBound},
-    map::components::Map,
+    global_components::{Direction, Rectangular},
+    map::components::{Map, RoomBound},
     movement::components::MovingRandomly,
     TILE_SIZE,
 };
@@ -69,7 +69,7 @@ pub fn spawn_enemy(
                 step_counter: 0,
             })
             .insert(RoomBound)
-            .insert(Rendered { size })
+            .insert(Rectangular(size))
             .insert(Hitbox {
                 pos,
                 width: 30.,

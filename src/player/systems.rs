@@ -1,6 +1,6 @@
-use crate::collision::components::Hitbox;
+use crate::{collision::components::Hitbox, map::components::RoomBound};
 use crate::combat::components::Health;
-use crate::global_components::Rendered;
+use crate::global_components::Rectangular;
 use crate::map::components::Map;
 use crate::player::components::Player;
 use bevy::prelude::*;
@@ -69,7 +69,7 @@ pub fn spawn_player(
             run_atlas: run_atlas_handle,
         })
         .insert(Health::new(30))
-        .insert(Rendered { size })
+        .insert(Rectangular(size))
         .insert(Hitbox {
             pos,
             width: 32.,
