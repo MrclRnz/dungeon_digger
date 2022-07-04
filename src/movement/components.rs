@@ -1,8 +1,8 @@
-use crate::global_components::Direction;
-use bevy::{prelude::*, reflect::Uuid};
+use crate::{global_components::Direction, events::RuledEvent};
+use bevy::prelude::*;
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq, SystemLabel)]
-pub struct MovementInput;
+pub struct BlocksMovement;
 
 #[derive(Component)]
 pub struct MovingRandomly {
@@ -12,46 +12,28 @@ pub struct MovingRandomly {
     pub step_counter: i32,
 }
 
-pub trait MoveEvent {
-    fn get_id(&self) -> Uuid;
-    fn get_entity(&self) -> Entity;
-    fn get_destination(&self) -> Vec3;
-    fn get_direction(&self) -> Direction;
-}
 
-#[derive(Debug)]
-pub struct RandomMoveAttempt {
-    pub id: Uuid,
+pub struct MoveAttempt {
     pub entity: Entity,
     pub destination: Vec3,
     pub direction: Direction,
+    pub viable: bool,
 }
 
-impl RandomMoveAttempt {
+impl MoveAttempt {
     pub fn new(entity: Entity, destination: Vec3, direction: Direction) -> Self {
-        RandomMoveAttempt {
-            id: Uuid::new_v4(),
+        Self {
             entity,
             destination,
             direction,
+            viable: true
         }
     }
 }
 
-impl MoveEvent for RandomMoveAttempt {
-    fn get_id(&self) -> Uuid {
-        self.id
-    }
+impl RuledEvent for MoveAttempt {
 
-    fn get_entity(&self) -> Entity {
-        self.entity
-    }
-
-    fn get_destination(&self) -> Vec3 {
-        self.destination
-    }
-
-    fn get_direction(&self) -> Direction {
-        self.direction
+    fn is_viable(&self) -> bool {
+        self.viable
     }
 }
