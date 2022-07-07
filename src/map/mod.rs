@@ -12,6 +12,7 @@ impl Plugin for MapPlugin {
         app.insert_resource(Map::new())
             .add_system_set(SystemSet::on_enter(GameState::AssetsDone).with_system(render_map))
             .add_system(check_wall_collision.label(BlocksMovement))
-            .add_system(check_room_boundaries.label(BlocksMovement));
+            .add_system(check_room_boundaries.label(BlocksMovement))
+            .add_system(reveal_visible_tiles);
     }
 }

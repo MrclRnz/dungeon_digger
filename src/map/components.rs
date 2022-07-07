@@ -11,6 +11,8 @@ use bevy_asset_loader::AssetCollection;
 pub struct MapAssets {
     #[asset(path = "frames/environment/floor", collection(typed))]
     floors: Vec<Handle<Image>>,
+    #[asset(path = "frames/environment/fog.png")]
+    fog: Handle<Image>,
     #[asset(path = "frames/environment/wall/wall_mid.png")]
     wall_mid: Handle<Image>,
     #[asset(path = "frames/environment/wall/wall_top_mid.png")]
@@ -63,6 +65,9 @@ pub enum TileType {
 
 #[derive(Component)]
 pub struct RoomBound;
+
+#[derive(Component)]
+pub struct Fog;
 
 #[derive(Clone, Debug)]
 pub struct Rectangle {
@@ -403,6 +408,20 @@ fn draw_floor(commands: &mut Commands, map_textures: &Res<MapAssets>, x: i32, y:
             ..default()
         },
         ..Default::default()
+    })
+    .with_children(|parent| {
+        parent.spawn_bundle(SpriteBundle {
+            texture: map_textures.fog.clone(),
+            transform: Transform {
+                translation: Vec3::new(
+                    0.,
+                    0.,
+                    1.0,
+                ),
+                ..default()
+            },
+            ..Default::default()
+        }).insert(Fog);
     });
 }
 
