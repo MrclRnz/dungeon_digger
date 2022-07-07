@@ -188,7 +188,5 @@ pub fn calculate_field_of_view(
             fov.visible_tiles
                 .insert((player_x + x_offset, player_y + y_offset));
         }
-        println!("Visible tiles: {:?}", fov.visible_tiles);
-        fov.dirty = false;
     }
 }

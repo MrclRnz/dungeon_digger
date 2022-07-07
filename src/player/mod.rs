@@ -16,6 +16,6 @@ impl Plugin for PlayerPlugin {
             .add_system(animate_run_player)
             .add_system(move_player.before(BlocksMovement))
             .add_system(camera_follow)
-            .add_system(calculate_field_of_view);
+            .add_system(calculate_field_of_view.after(move_player));
     }
 }

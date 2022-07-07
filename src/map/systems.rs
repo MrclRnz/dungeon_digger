@@ -43,31 +43,21 @@ pub fn check_room_boundaries(
 }
 
 pub fn reveal_visible_tiles(
-    player_query: Query<&FieldOfView, With<Player>>,
+    mut player_query: Query<&mut FieldOfView, With<Player>>,
     mut fog_query: Query<(&Parent, &mut Visibility), With<Fog>>,
     fog_parent: Query<&Transform>,
 ) {
-    for fov in player_query.iter() {
-        if !fov.dirty {
-            continue;
-        }
+    for mut fov in player_query.iter_mut() {
         for (parent, mut visibility) in fog_query.iter_mut() {
             if let Ok(trans) = fog_parent.get(**parent) {
-                let test = get_coordinate_from_index(map_idx_f32(
-                    trans.translation.x,
-                    trans.translation.y,
-                ));
-                println!("Test: {:?}", test);
-                if fov
-                    .visible_tiles
-                    .contains(&get_coordinate_from_index(map_idx_f32(
-                        trans.translation.x,
-                        trans.translation.y,
-                    )))
-                {
-                    visibility.is_visible = false
-                }
+                visibility.is_visible =
+                    !fov.visible_tiles
+                        .contains(&get_coordinate_from_index(map_idx_f32(
+                            trans.translation.x,
+                            trans.translation.y,
+                        )))
             }
         }
+        fov.dirty = false;
     }
 }
