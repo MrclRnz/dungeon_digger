@@ -6,15 +6,16 @@ use crate::player::systems::{animate_run_player, camera_follow, move_player, spa
 use crate::GameState;
 use bevy::prelude::*;
 
-use self::systems::issue_attack;
+use self::systems::{equip_weapon, issue_attack};
 pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::MapDrawn).with_system(spawn_player))
+            .add_system_set(SystemSet::on_enter(GameState::PlayerSpawned).with_system(equip_weapon))
             .add_system(animate_run_player)
             .add_system(move_player.before(BlocksMovement))
-            .add_system(camera_follow);
-            //.add_system(issue_attack);
+            .add_system(camera_follow)
+            .add_system(issue_attack);
     }
 }

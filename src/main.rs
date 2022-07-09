@@ -58,11 +58,11 @@ fn main() {
     .add_state(GameState::AssetLoading)
     .add_plugins(DefaultPlugins)
     .add_plugin(MapPlugin)
+    .add_plugin(CombatPlugin)
     .add_plugin(PlayerPlugin)
     .add_plugin(EnemyPlugin)
     .add_plugin(CollisionPlugin)
     .add_plugin(MovementPlugin)
-    .add_plugin(CombatPlugin)
     .add_plugin(WorldInspectorPlugin::new())
     .register_inspectable::<Health>() //
     //.add_plugin(LogDiagnosticsPlugin::default())
@@ -80,4 +80,5 @@ pub enum GameState {
     AssetLoading,
     AssetsDone,
     MapDrawn,
+    PlayerSpawned
 }

@@ -9,6 +9,3 @@ pub struct EnemyAssets {
     #[asset(path = "frames/units/big_zombie/run", collection(typed))]
     pub big_zombie_run: Vec<Handle<Image>>,
 }
-
-#[derive(Component, Deref, DerefMut)]
-pub struct AnimationTimer(pub Timer);

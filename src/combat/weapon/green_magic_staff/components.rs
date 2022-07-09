@@ -1,7 +1,7 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, ecs::entity};
 use bevy_asset_loader::AssetCollection;
 
-use crate::combat::weapon::components::{WeaponAttack, Weapon};
+use crate::combat::weapon::components::{WeaponAttack, Attacking, Weapon};
 
 #[derive(AssetCollection)]
 pub struct GreenMagicStaffAssets {
@@ -11,23 +11,19 @@ pub struct GreenMagicStaffAssets {
     pub fire: Vec<Handle<Image>>,
 }
 
-pub struct GreenMagicStaff {
-
-}
-
-pub struct GreenMagicStaffAttack {
-    entity: Entity
+pub struct GreenMagicStaffTextureAtlases {
+    pub idle_atlas: Handle<TextureAtlas>,
+    pub attack_atlas: Handle<TextureAtlas>,
 }
 
 
-impl WeaponAttack for GreenMagicStaffAttack {
-    fn get_entity(&self) -> Entity {
-        self.entity
-    }
-}
+pub struct GreenMagicStaff;
 
-impl Weapon for GreenMagicStaff {
-    fn attack(&self, entity: Entity) -> Box<dyn WeaponAttack + Send + Sync> {
-        Box::new(GreenMagicStaffAttack{entity})
+impl Attacking for GreenMagicStaff {
+    fn attack(&self, attacker: Entity) -> WeaponAttack {
+        WeaponAttack  {
+            attacker,
+            weapon: Weapon::GreenMagicStaffAttack
+        }
     }
 }

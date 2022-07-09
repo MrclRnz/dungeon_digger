@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::events::RuledEventQueue;
+use crate::events::{RuledEventQueue, cleanup_event_queue};
 
 use self::{
     components::{BlocksMovement, MoveAttempt},
@@ -16,6 +16,8 @@ impl Plugin for MovementPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource::<RuledEventQueue<MoveAttempt>>(RuledEventQueue::new())
             .add_system(move_randomly.before(BlocksMovement))
-            .add_system(move_entity.after(BlocksMovement));
+            .add_system(move_entity.after(BlocksMovement))
+            .add_system(move_entity)
+            .add_system(cleanup_event_queue::<MoveAttempt>.exclusive_system().at_end());
     }
 }

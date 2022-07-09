@@ -54,3 +54,4 @@ pub fn move_randomly(
         }
     }
 }
+

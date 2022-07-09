@@ -9,9 +9,6 @@ pub struct PlayerAssets {
     pub male_wizard_idle: Vec<Handle<Image>>,
 }
 
-#[derive(Component, Deref, DerefMut)]
-pub struct AnimationTimer(pub Timer);
-
 #[derive(Component)]
 pub struct Player {
     pub idle_atlas: Handle<TextureAtlas>,

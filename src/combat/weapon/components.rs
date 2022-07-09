@@ -1,5 +1,5 @@
-use bevy::prelude::*;
 use crate::events::RuledEvent;
+use bevy::prelude::*;
 
 pub struct AttackAttempt {
     pub attacker: Entity,
@@ -22,12 +22,22 @@ impl RuledEvent for AttackAttempt {
 }
 
 #[derive(Component)]
-pub struct Armed<W: Weapon + Send + Sync>(pub W);
-
-pub trait WeaponAttack {
-    fn get_entity(&self) -> Entity;
+pub struct Armed<W: Attacking + Send + Sync> {
+    pub weapon: W,
 }
 
-pub trait Weapon {
-    fn attack(&self, entity:Entity) -> Box<dyn WeaponAttack + Send + Sync>;
+#[derive(Component)]
+pub struct WeaponSprite;
+
+pub enum Weapon {
+    GreenMagicStaffAttack,
+}
+
+pub struct WeaponAttack {
+    pub attacker: Entity,
+    pub weapon: Weapon,
+}
+
+pub trait Attacking {
+    fn attack(&self, attacker: Entity) -> WeaponAttack;
 }

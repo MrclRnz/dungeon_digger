@@ -1,15 +1,21 @@
 use crate::collision::components::Hitbox;
 use crate::combat::components::Health;
+use crate::combat::weapon::components::Armed;
 use crate::combat::weapon::components::AttackAttempt;
+use crate::combat::weapon::components::WeaponSprite;
+use crate::combat::weapon::green_magic_staff::components::GreenMagicStaff;
+use crate::combat::weapon::green_magic_staff::components::GreenMagicStaffAssets;
 use crate::events::RuledEventQueue;
+use crate::global_components::AnimationTimer;
 use crate::global_components::Direction;
 use crate::global_components::Rectangular;
 use crate::map::components::Map;
 use crate::movement::components::MoveAttempt;
 use crate::player::components::Player;
+use crate::GameState;
 use bevy::prelude::*;
 
-use super::components::{AnimationTimer, PlayerAssets};
+use super::components::PlayerAssets;
 
 const PLAYER_MOVEMENTSPEED: f32 = 2.0;
 
@@ -19,6 +25,7 @@ pub fn spawn_player(
     player_textures: Res<PlayerAssets>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut textures: ResMut<Assets<Image>>,
+    mut game_state: ResMut<State<GameState>>,
 ) {
     let mut texture_atlas_builder = TextureAtlasBuilder::default();
     for handle in &player_textures.male_wizard_run {
@@ -81,6 +88,47 @@ pub fn spawn_player(
             width: 32.,
             height: 42.,
         });
+
+    game_state.set(GameState::PlayerSpawned).unwrap();
+}
+
+pub fn equip_weapon(
+    mut commands: Commands,
+    player_query: Query<Entity, With<Player>>,
+    green_magic_staff_textures: Res<GreenMagicStaffAssets>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut textures: ResMut<Assets<Image>>,
+) {
+    let mut texture_atlas_builder = TextureAtlasBuilder::default();
+
+    let texture = textures.get(&green_magic_staff_textures.idle).unwrap();
+    texture_atlas_builder.add_texture(green_magic_staff_textures.idle.clone_weak(), texture);
+    let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
+
+    let idle_atlas_handle = texture_atlases.add(texture_atlas);
+
+    for player in player_query.iter() {
+        commands
+            .entity(player)
+            .insert(Armed {
+                weapon: GreenMagicStaff,
+            })
+            .with_children(|parent| {
+                parent
+                    .spawn_bundle(SpriteSheetBundle {
+                        transform: Transform {
+                            translation: Vec3::new(8., -5., 0.1),
+                            scale: Vec3::splat(0.5),
+                            ..default()
+                        },
+                        sprite: TextureAtlasSprite::new(0),
+                        texture_atlas: idle_atlas_handle.clone(),
+                        ..default()
+                    })
+                    .insert(WeaponSprite)
+                    .insert(AnimationTimer(Timer::from_seconds(0.1, false)));
+            });
+    }
 }
 
 pub fn animate_run_player(

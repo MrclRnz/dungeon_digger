@@ -1,5 +1,7 @@
 use std::collections::{vec_deque::IterMut, VecDeque};
 
+use bevy::prelude::ResMut;
+
 pub trait RuledEvent {
     fn is_viable(&self) -> bool;
 }
@@ -23,4 +25,8 @@ impl<T: RuledEvent> RuledEventQueue<T> {
         self.events.retain(|e| e.is_viable());
         self.events.iter_mut()
     }
+}
+
+pub fn cleanup_event_queue<E: RuledEvent + Send + Sync + 'static>(mut events: ResMut<RuledEventQueue<E>>,) {
+    events.events.clear();
 }

@@ -1,4 +1,4 @@
-use bevy::{math::Vec2, prelude::Component};
+use bevy::{math::Vec2, prelude::*};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Direction {
@@ -10,3 +10,6 @@ pub enum Direction {
 
 #[derive(Component)]
 pub struct Rectangular(pub Vec2);
+
+#[derive(Component, Deref, DerefMut)]
+pub struct AnimationTimer(pub Timer);

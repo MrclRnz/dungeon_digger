@@ -4,13 +4,13 @@ use crate::{
     collision::components::Hitbox,
     combat::components::Health,
     enemy::components::Enemy,
-    global_components::{Direction, Rectangular},
+    global_components::{Direction, Rectangular, AnimationTimer},
     map::components::{Map, RoomBound},
     movement::components::MovingRandomly,
     TILE_SIZE,
 };
 
-use super::components::{AnimationTimer, EnemyAssets};
+use super::components::EnemyAssets;
 
 pub fn spawn_enemy(
     mut commands: Commands,
