@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::events::{RuledEventQueue, cleanup_event_queue};
+use crate::events::{cleanup_event_queue, RuledEventQueue};
 
 use self::{
     components::{BlocksMovement, MoveAttempt},
@@ -18,6 +18,10 @@ impl Plugin for MovementPlugin {
             .add_system(move_randomly.before(BlocksMovement))
             .add_system(move_entity.after(BlocksMovement))
             .add_system(move_entity)
-            .add_system(cleanup_event_queue::<MoveAttempt>.exclusive_system().at_end());
+            .add_system(
+                cleanup_event_queue::<MoveAttempt>
+                    .exclusive_system()
+                    .at_end(),
+            );
     }
 }

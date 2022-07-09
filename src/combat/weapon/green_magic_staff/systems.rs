@@ -38,8 +38,7 @@ pub fn create_green_magic_staff_atlases(
 
 pub fn perform_attack(mut attack_events: EventReader<WeaponAttack>) {
     for attack_event in attack_events.iter() {
-        if let Weapon::GreenMagicStaffAttack = attack_event.weapon {
-        }
+        if let Weapon::GreenMagicStaffAttack = attack_event.weapon {}
     }
 }
 

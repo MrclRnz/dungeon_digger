@@ -17,7 +17,8 @@ use bevy_inspector_egui::{RegisterInspectable, WorldInspectorPlugin};
 use collision::CollisionPlugin;
 use combat::{
     components::{Health, HealthAssets},
-    CombatPlugin, weapon::green_magic_staff::components::GreenMagicStaffAssets,
+    weapon::green_magic_staff::components::GreenMagicStaffAssets,
+    CombatPlugin,
 };
 use enemy::{components::EnemyAssets, EnemyPlugin};
 use map::components::MapAssets;
@@ -80,5 +81,5 @@ pub enum GameState {
     AssetLoading,
     AssetsDone,
     MapDrawn,
-    PlayerSpawned
+    PlayerSpawned,
 }

@@ -1,7 +1,7 @@
-use bevy::{prelude::*, ecs::entity};
+use bevy::prelude::*;
 use bevy_asset_loader::AssetCollection;
 
-use crate::combat::weapon::components::{WeaponAttack, Attacking, Weapon};
+use crate::combat::weapon::components::{Attacking, Weapon, WeaponAttack};
 
 #[derive(AssetCollection)]
 pub struct GreenMagicStaffAssets {
@@ -16,14 +16,13 @@ pub struct GreenMagicStaffTextureAtlases {
     pub attack_atlas: Handle<TextureAtlas>,
 }
 
-
 pub struct GreenMagicStaff;
 
 impl Attacking for GreenMagicStaff {
     fn attack(&self, attacker: Entity) -> WeaponAttack {
-        WeaponAttack  {
+        WeaponAttack {
             attacker,
-            weapon: Weapon::GreenMagicStaffAttack
+            weapon: Weapon::GreenMagicStaffAttack,
         }
     }
 }

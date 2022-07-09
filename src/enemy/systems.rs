@@ -4,7 +4,7 @@ use crate::{
     collision::components::Hitbox,
     combat::components::Health,
     enemy::components::Enemy,
-    global_components::{Direction, Rectangular, AnimationTimer},
+    global_components::{AnimationTimer, Direction, Rectangular},
     map::components::{Map, RoomBound},
     movement::components::MovingRandomly,
     TILE_SIZE,

@@ -1,8 +1,14 @@
-use bevy::{prelude::*, ecs::schedule::ShouldRun};
+use bevy::{ecs::schedule::ShouldRun, prelude::*};
 
-use crate::{GameState, player::systems::issue_attack};
+use crate::{player::systems::issue_attack, GameState};
 
-use self::{components::GreenMagicStaff, systems::{create_green_magic_staff_atlases, perform_attack, perform_attack_animation, animate_green_magic_staff_attack}};
+use self::{
+    components::GreenMagicStaff,
+    systems::{
+        animate_green_magic_staff_attack, create_green_magic_staff_atlases, perform_attack,
+        perform_attack_animation,
+    },
+};
 
 use super::systems::perform_weapon_attacks;
 
@@ -13,7 +19,10 @@ pub struct GreenMagicStaffPlugin;
 
 impl Plugin for GreenMagicStaffPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(GameState::AssetsDone).with_system(create_green_magic_staff_atlases))
+        app.add_system_set(
+            SystemSet::on_enter(GameState::AssetsDone)
+                .with_system(create_green_magic_staff_atlases),
+        )
         .add_system(perform_weapon_attacks::<GreenMagicStaff>)
         .add_system(perform_attack.after(issue_attack))
         .add_system(perform_attack_animation.after(issue_attack))

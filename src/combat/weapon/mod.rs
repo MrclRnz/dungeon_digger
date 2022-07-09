@@ -1,13 +1,10 @@
 use bevy::prelude::*;
 
-use crate::{
-    events::{cleanup_event_queue, RuledEventQueue},
-    player::systems::issue_attack,
-};
+use crate::events::{cleanup_event_queue, RuledEventQueue};
 
 use self::{
     components::{AttackAttempt, WeaponAttack},
-    green_magic_staff::{systems::perform_attack, GreenMagicStaffPlugin},
+    green_magic_staff::GreenMagicStaffPlugin,
 };
 
 pub mod components;

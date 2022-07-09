@@ -27,6 +27,8 @@ impl<T: RuledEvent> RuledEventQueue<T> {
     }
 }
 
-pub fn cleanup_event_queue<E: RuledEvent + Send + Sync + 'static>(mut events: ResMut<RuledEventQueue<E>>,) {
+pub fn cleanup_event_queue<E: RuledEvent + Send + Sync + 'static>(
+    mut events: ResMut<RuledEventQueue<E>>,
+) {
     events.events.clear();
 }

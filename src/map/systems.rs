@@ -1,7 +1,7 @@
+use crate::events::RuledEventQueue;
 use crate::map::components::Map;
 use crate::movement::components::MoveAttempt;
-use crate::{events::RuledEventQueue};
-use crate::{GameState};
+use crate::GameState;
 
 use bevy::prelude::*;
 
@@ -31,10 +31,10 @@ pub fn check_room_boundaries(
     room_bound_units: Query<&RoomBound>,
 ) {
     for move_attempt in move_events.read_events() {
-        if let Ok(_) = room_bound_units.get(move_attempt.entity) {
-            if !map.within_room(move_attempt.destination) {
-                move_attempt.viable = false;
-            }
+        if room_bound_units.get(move_attempt.entity).is_ok()
+            && !map.within_room(move_attempt.destination)
+        {
+            move_attempt.viable = false;
         }
     }
 }
