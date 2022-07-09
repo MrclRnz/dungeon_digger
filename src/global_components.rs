@@ -10,4 +10,3 @@ pub enum Direction {
 
 #[derive(Component)]
 pub struct Rectangular(pub Vec2);
-

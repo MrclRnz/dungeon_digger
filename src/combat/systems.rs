@@ -36,11 +36,7 @@ pub fn spawn_health_bar(
                     .spawn_bundle(SpriteBundle {
                         texture: health_textures.health.clone(),
                         transform: Transform {
-                            translation: Vec3::new(
-                                HEALTH_BAR_X_START,
-                                (size.0.y / 2.) + 3.,
-                                0.7,
-                            ),
+                            translation: Vec3::new(HEALTH_BAR_X_START, (size.0.y / 2.) + 3., 0.7),
                             scale: Vec3::splat(1.0),
                             ..default()
                         },

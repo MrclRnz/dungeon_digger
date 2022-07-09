@@ -210,7 +210,8 @@ impl Map {
 
     /// This should use proper collision algorithm
     pub fn within_room(&self, destination: Vec3) -> bool {
-        let (target_x, target_y) = get_coordinate_from_index(map_idx_f32(destination.x, destination.y));
+        let (target_x, target_y) =
+            get_coordinate_from_index(map_idx_f32(destination.x, destination.y));
         let target_rectangle = Rectangle::new(target_x, target_y, 1, 1);
         for room in self.rooms.iter() {
             if room.intersects(&target_rectangle) {

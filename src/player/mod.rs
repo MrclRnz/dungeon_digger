@@ -2,8 +2,7 @@ pub mod components;
 pub mod systems;
 
 use crate::movement::components::BlocksMovement;
-use crate::player::components::{camera_follow, move_player};
-use crate::player::systems::{animate_run_player, spawn_player};
+use crate::player::systems::{animate_run_player, camera_follow, move_player, spawn_player};
 use crate::GameState;
 use bevy::prelude::*;
 pub struct PlayerPlugin;
