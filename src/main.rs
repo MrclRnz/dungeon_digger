@@ -17,7 +17,7 @@ use bevy_inspector_egui::{RegisterInspectable, WorldInspectorPlugin};
 use collision::CollisionPlugin;
 use combat::{
     components::{Health, HealthAssets},
-    CombatPlugin,
+    CombatPlugin, weapon::green_magic_staff::components::GreenMagicStaffAssets,
 };
 use enemy::{components::EnemyAssets, EnemyPlugin};
 use map::components::MapAssets;
@@ -46,6 +46,7 @@ fn main() {
         .with_collection::<PlayerAssets>()
         .with_collection::<EnemyAssets>()
         .with_collection::<HealthAssets>()
+        .with_collection::<GreenMagicStaffAssets>()
         .build(&mut app);
     app.insert_resource(WindowDescriptor {
         title: "Dungeon Digger".to_string(),

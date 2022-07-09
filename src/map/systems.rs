@@ -1,13 +1,11 @@
 use crate::map::components::Map;
 use crate::movement::components::MoveAttempt;
-use crate::{events::RuledEventQueue, global_components::Rectangular};
-use crate::{GameState, TILE_SIZE};
+use crate::{events::RuledEventQueue};
+use crate::{GameState};
 
 use bevy::prelude::*;
 
-use super::components::{
-    get_coordinate_from_index, map_idx_f32, try_map_idx, MapAssets, Rectangle, RoomBound,
-};
+use super::components::{MapAssets, RoomBound};
 
 pub fn render_map(
     mut commands: Commands,

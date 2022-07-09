@@ -1,5 +1,6 @@
 use crate::collision::components::Hitbox;
 use crate::combat::components::Health;
+use crate::combat::weapon::components::AttackAttempt;
 use crate::events::RuledEventQueue;
 use crate::global_components::Direction;
 use crate::global_components::Rectangular;
@@ -103,6 +104,18 @@ pub fn animate_run_player(
     }
 }
 
+pub fn camera_follow(
+    player_query: Query<&Transform, With<Player>>,
+    mut camera_query: Query<&mut Transform, (Without<Player>, With<Camera>)>,
+) {
+    for player_transform in player_query.iter() {
+        let mut camera_transform = camera_query.single_mut();
+
+        camera_transform.translation.x = player_transform.translation.x;
+        camera_transform.translation.y = player_transform.translation.y;
+    }
+}
+
 pub fn move_player(
     keyboard_input: Res<Input<KeyCode>>,
     mut move_events: ResMut<RuledEventQueue<MoveAttempt>>,
@@ -115,46 +128,45 @@ pub fn move_player(
     )>,
 ) {
     for (entity, trans, mut sprite, mut handle, player) in player_query.iter_mut() {
-        if !keyboard_input.any_pressed([KeyCode::Left, KeyCode::Right, KeyCode::Up, KeyCode::Down])
-        {
+        if !keyboard_input.any_pressed([KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D]) {
             *handle = player.idle_atlas.clone();
             return;
         }
         let mut destination = trans.translation;
-        if keyboard_input.pressed(KeyCode::Left) {
+        if keyboard_input.pressed(KeyCode::W) {
+            destination += Vec3::new(0., PLAYER_MOVEMENTSPEED, 0.);
+            let direction = Direction::Up;
+            move_events.add_event(MoveAttempt::new(entity, destination, direction));
+        }
+        if keyboard_input.pressed(KeyCode::A) {
             destination -= Vec3::new(PLAYER_MOVEMENTSPEED, 0., 0.);
             let direction = Direction::Left;
             sprite.flip_x = true;
             move_events.add_event(MoveAttempt::new(entity, destination, direction));
         }
-        if keyboard_input.pressed(KeyCode::Right) {
+        if keyboard_input.pressed(KeyCode::S) {
+            destination -= Vec3::new(0., PLAYER_MOVEMENTSPEED, 0.);
+            let direction = Direction::Down;
+            move_events.add_event(MoveAttempt::new(entity, destination, direction));
+        }
+        if keyboard_input.pressed(KeyCode::D) {
             destination += Vec3::new(PLAYER_MOVEMENTSPEED, 0., 0.);
             let direction = Direction::Right;
             sprite.flip_x = false;
-            move_events.add_event(MoveAttempt::new(entity, destination, direction));
-        }
-        if keyboard_input.pressed(KeyCode::Up) {
-            destination += Vec3::new(0., PLAYER_MOVEMENTSPEED, 0.);
-            let direction = Direction::Up;
-            move_events.add_event(MoveAttempt::new(entity, destination, direction));
-        }
-        if keyboard_input.pressed(KeyCode::Down) {
-            destination -= Vec3::new(0., PLAYER_MOVEMENTSPEED, 0.);
-            let direction = Direction::Down;
             move_events.add_event(MoveAttempt::new(entity, destination, direction));
         }
         *handle = player.run_atlas.clone();
     }
 }
 
-pub fn camera_follow(
-    player_query: Query<&Transform, With<Player>>,
-    mut camera_query: Query<&mut Transform, (Without<Player>, With<Camera>)>,
+pub fn issue_attack(
+    mouse_input: Res<Input<MouseButton>>,
+    mut attack_events: ResMut<RuledEventQueue<AttackAttempt>>,
+    player_query: Query<Entity, With<Player>>,
 ) {
-    for player_transform in player_query.iter() {
-        let mut camera_transform = camera_query.single_mut();
-
-        camera_transform.translation.x = player_transform.translation.x;
-        camera_transform.translation.y = player_transform.translation.y;
+    if mouse_input.just_pressed(MouseButton::Left) {
+        if let Ok(player) = player_query.get_single() {
+            attack_events.add_event(AttackAttempt::new(player));
+        }
     }
 }

@@ -1,6 +1,6 @@
 pub mod components;
 mod systems;
-mod weapon;
+pub mod weapon;
 
 use bevy::{ecs::schedule::ShouldRun, prelude::*};
 
