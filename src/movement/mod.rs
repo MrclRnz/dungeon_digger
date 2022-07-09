@@ -17,11 +17,10 @@ impl Plugin for MovementPlugin {
         app.insert_resource::<RuledEventQueue<MoveAttempt>>(RuledEventQueue::new())
             .add_system(move_randomly.before(BlocksMovement))
             .add_system(move_entity.after(BlocksMovement))
-            .add_system(move_entity)
-            .add_system(
-                cleanup_event_queue::<MoveAttempt>
-                    .exclusive_system()
-                    .at_end(),
-            );
+            .add_system(move_entity);
+            // this breaks the feature?!
+            // maybe theres also a double buffer required
+            // this needs to be implemented at some point because it causes memory to grow infinitely
+            //.add_system(cleanup_event_queue::<MoveAttempt>.after(move_entity));
     }
 }
