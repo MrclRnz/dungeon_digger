@@ -5,8 +5,8 @@ use crate::{player::systems::issue_attack, GameState};
 use self::{
     components::GreenMagicStaff,
     systems::{
-        animate_green_magic_staff_attack, create_green_magic_staff_atlases, perform_attack,
-        perform_attack_animation,
+        animate_green_magic_staff_attack, animate_projectile, create_green_magic_staff_atlases,
+        perform_attack, perform_attack_animation, move_projectile,
     },
 };
 
@@ -24,13 +24,15 @@ impl Plugin for GreenMagicStaffPlugin {
                 .with_system(create_green_magic_staff_atlases),
         )
         .add_system(perform_weapon_attacks::<GreenMagicStaff>)
-        .add_system(perform_attack.after(issue_attack))
+        .add_system(perform_attack::<GreenMagicStaff>.after(issue_attack).with_run_criteria(assets_are_loaded))
+        .add_system(animate_projectile.with_run_criteria(assets_are_loaded))
         .add_system(perform_attack_animation.after(issue_attack))
-        .add_system(animate_green_magic_staff_attack.with_run_criteria(run_attack_animation));
+        .add_system(move_projectile)
+        .add_system(animate_green_magic_staff_attack.with_run_criteria(assets_are_loaded));
     }
 }
 
-fn run_attack_animation(game_state: Res<State<GameState>>) -> ShouldRun {
+fn assets_are_loaded(game_state: Res<State<GameState>>) -> ShouldRun {
     if *game_state.current() == GameState::PlayerSpawned {
         ShouldRun::Yes
     } else {

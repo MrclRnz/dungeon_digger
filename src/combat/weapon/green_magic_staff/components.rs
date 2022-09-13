@@ -9,11 +9,14 @@ pub struct GreenMagicStaffAssets {
     pub idle: Handle<Image>,
     #[asset(path = "frames/weapons/green_magic_staff/attack", collection(typed))]
     pub fire: Vec<Handle<Image>>,
+    #[asset(path = "frames/weapons/green_magic_staff/projectile", collection(typed))]
+    pub projectile:Vec<Handle<Image>>,
 }
 
 pub struct GreenMagicStaffTextureAtlases {
     pub idle_atlas: Handle<TextureAtlas>,
     pub attack_atlas: Handle<TextureAtlas>,
+    pub projectile_atlas: Handle<TextureAtlas>
 }
 
 pub struct GreenMagicStaff;
@@ -26,3 +29,6 @@ impl Attacking for GreenMagicStaff {
         }
     }
 }
+
+#[derive(Component)]
+pub struct GreenMagicStaffProjectileSprite;

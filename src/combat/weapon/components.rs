@@ -41,3 +41,10 @@ pub struct WeaponAttack {
 pub trait Attacking {
     fn attack(&self, attacker: Entity) -> WeaponAttack;
 }
+
+#[derive(Component)]
+pub struct Projectile {
+    pub travel_speed: f32,
+    pub damage: f32,
+    pub direction: crate::global_components::Direction
+}
