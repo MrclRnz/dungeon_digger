@@ -42,9 +42,8 @@ pub fn create_green_magic_staff_atlases(
     }
 
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
-    let projectile_atlas_handle = texture_atlases.add(texture_atlas);
-
     println!("Images in projectile atlas: {:?}", &texture_atlas.len());
+    let projectile_atlas_handle = texture_atlases.add(texture_atlas);
 
     commands.insert_resource(GreenMagicStaffTextureAtlases {
         idle_atlas: idle_atlas_handle,
