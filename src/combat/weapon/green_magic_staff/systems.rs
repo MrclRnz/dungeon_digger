@@ -42,7 +42,6 @@ pub fn create_green_magic_staff_atlases(
     }
 
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
-    println!("Images in projectile atlas: {:?}", &texture_atlas.len());
     let projectile_atlas_handle = texture_atlases.add(texture_atlas);
 
     commands.insert_resource(GreenMagicStaffTextureAtlases {
@@ -75,11 +74,11 @@ pub fn perform_attack<W>(
                         ..default()
                     })
                     .insert(Projectile {
-                        travel_speed: 20.,
+                        travel_speed: 80.,
                         damage: 20.,
                         direction: Direction::Down,
                     })
-                    .insert(AnimationTimer(Timer::from_seconds(1., false)))
+                    .insert(AnimationTimer(Timer::from_seconds(0.5, false)))
                     .insert(GreenMagicStaffProjectileSprite);
             }
         }

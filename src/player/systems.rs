@@ -209,12 +209,12 @@ pub fn move_player(
 
 pub fn issue_attack(
     mouse_input: Res<Input<MouseButton>>,
-    keyboard_input: Res<Input<KeyCode>>,
+    //keyboard_input: Res<Input<KeyCode>>,
     mut attack_events: ResMut<RuledEventQueue<AttackAttempt>>,
     player_query: Query<Entity, With<Player>>,
 ) {
-    //if mouse_input.just_pressed(MouseButton::Left) {
-    if keyboard_input.just_pressed(KeyCode::B) {
+    if mouse_input.just_pressed(MouseButton::Left) {
+    //if keyboard_input.just_pressed(KeyCode::B) {
         if let Ok(player) = player_query.get_single() {
             attack_events.add_event(AttackAttempt::new(player));
         }
